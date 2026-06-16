@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "IBM Plex Sans", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --background: 248 250 252;
+  --foreground: 15 23 42;
+  --panel: 255 255 255;
+  --muted: 100 116 139;
+}
+
+.dark {
+  --background: 7 12 24;
+  --foreground: 226 232 240;
+  --panel: 15 23 42;
+  --muted: 148 163 184;
+}
+
+html, body {
+  min-height: 100%;
+}
+
+body {
+  color: rgb(var(--foreground));
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(249, 115, 22, 0.12), transparent 20%),
+    rgb(var(--background));
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.panel {
+  @apply rounded-3xl border border-slate-200/70 bg-white/90 shadow-panel backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/85;
+}
+
+.panel-grid {
+  background-image: radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.12) 1px, transparent 0);
+  background-size: 18px 18px;
+}
+
