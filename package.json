@@ -29,5 +29,9 @@
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
     "typescript": "5.6.3"
+  },
+  "optionalDependencies": {
+    "@emnapi/core": "1.11.1",
+    "@emnapi/runtime": "1.11.1"
   }
 }
