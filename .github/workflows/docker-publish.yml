@@ -98,3 +98,5 @@ jobs:
           echo "Published image:"
           echo "${{ env.IMAGE_REPOSITORY }}:sha-${{ github.sha }}"
 
+#sas
+
