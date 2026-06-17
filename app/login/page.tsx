@@ -64,22 +64,12 @@ export default function LoginPage() {
           <div className="space-y-4">
             <button
               type="button"
-              onClick={() => void login("workforce")}
+              onClick={() => void login()}
               className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 font-medium text-white transition hover:bg-sky-600 dark:bg-white dark:text-slate-950"
             >
               {authMode === "dev-local" ? "Use local developer profile" : "Continue with Work Account"}
               <ArrowRight className="h-4 w-4" />
             </button>
-
-            {authMode !== "dev-local" ? (
-              <button
-                type="button"
-                onClick={() => void login("personal")}
-                className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium dark:border-slate-700"
-              >
-                Continue with Personal Microsoft Account
-              </button>
-            ) : null}
 
             {authMode === "dev-local" ? (
               <button
@@ -117,7 +107,7 @@ export default function LoginPage() {
             <div className="mt-2 font-medium">{authMode}</div>
             {authMode !== "dev-local" ? (
               <div className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-                Use the work-account flow for company workspace onboarding. The personal-account flow is only for intentional personal workspace access.
+                Company workspaces are created from tenant-scoped work or guest sign-in only. Personal standalone workspace creation is disabled.
               </div>
             ) : null}
           </div>
