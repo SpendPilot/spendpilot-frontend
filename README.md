@@ -24,3 +24,5 @@ Routing expectation:
 - Browser calls `/api`
 - Azure Front Door forwards to kGateway
 - HTTPRoutes split the call to the correct backend microservice
+
+Workflow trigger note: refreshed on 2026-06-17 to republish the frontend image.
