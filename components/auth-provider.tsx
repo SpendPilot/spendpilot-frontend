@@ -51,7 +51,7 @@ type AuthShape = {
   profile: AuthProfile | null;
   ready: boolean;
   error: string | null;
-  login: () => Promise<void>;
+  login: (mode?: "workforce" | "personal") => Promise<void>;
   logout: () => Promise<void>;
   devLogin: (profile?: { email?: string; display_name?: string; role?: string }) => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -60,6 +60,7 @@ type AuthShape = {
 const AuthContext = createContext<AuthShape | null>(null);
 const DEV_TOKEN_KEY = "spend-control-dev-token";
 const DEV_PROFILE_KEY = "spend-control-dev-profile";
+const ENTRA_WORKSPACE_MODE_KEY = "spend-control-entra-workspace-mode";
 
 let msalApp: PublicClientApplication | null = null;
 
@@ -87,10 +88,11 @@ function getMsalApp() {
   return msalApp;
 }
 
-async function fetchCurrentProfile(token: string) {
+async function fetchCurrentProfile(token: string, workspaceMode?: "workforce" | "personal" | null) {
   const response = await fetch(buildApiUrl("/auth/me"), {
     headers: {
       Authorization: `Bearer ${token}`,
+      ...(workspaceMode ? { "X-Spend-Workspace-Mode": workspaceMode } : {}),
     },
     cache: "no-store",
   });
@@ -114,19 +116,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<AuthProfile | null>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [workspaceMode, setWorkspaceMode] = useState<"workforce" | "personal" | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
     async function completeEntraSession(app: PublicClientApplication, account: AccountInfo) {
+      const activeWorkspaceMode =
+        (window.sessionStorage.getItem(ENTRA_WORKSPACE_MODE_KEY) as "workforce" | "personal" | null) ?? null;
       const result: AuthenticationResult = await app.acquireTokenSilent({
         account,
         scopes: [apiScope],
       });
-      const nextProfile = await fetchCurrentProfile(result.accessToken);
+      const nextProfile = await fetchCurrentProfile(result.accessToken, activeWorkspaceMode);
       if (!cancelled) {
         setToken(result.accessToken);
         setProfile(nextProfile);
+        setWorkspaceMode(activeWorkspaceMode);
       }
     }
 
@@ -182,7 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [apiScope, authMode]);
 
-  const login = async () => {
+  const login = async (mode: "workforce" | "personal" = "workforce") => {
     setError(null);
     if (authMode === "dev-local") {
       await devLogin();
@@ -195,7 +201,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    await app.loginRedirect({ scopes: [apiScope], prompt: "select_account" });
+    window.sessionStorage.setItem(ENTRA_WORKSPACE_MODE_KEY, mode);
+    setWorkspaceMode(mode);
+
+    const authority =
+      mode === "personal"
+        ? runtimeConfig.entraAuthority
+        : "https://login.microsoftonline.com/organizations";
+
+    await app.loginRedirect({
+      authority,
+      scopes: [apiScope],
+      prompt: "select_account",
+    });
   };
 
   const devLogin = async (requestedProfile?: { email?: string; display_name?: string; role?: string }) => {
@@ -220,7 +238,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshProfile = async () => {
     if (!token) return;
-    const nextProfile = await fetchCurrentProfile(token);
+    const activeWorkspaceMode =
+      workspaceMode ||
+      ((window.sessionStorage.getItem(ENTRA_WORKSPACE_MODE_KEY) as "workforce" | "personal" | null) ?? null);
+    const nextProfile = await fetchCurrentProfile(token, activeWorkspaceMode);
     setProfile(nextProfile);
     if (authMode === "dev-local") {
       window.sessionStorage.setItem(DEV_PROFILE_KEY, JSON.stringify(nextProfile));
