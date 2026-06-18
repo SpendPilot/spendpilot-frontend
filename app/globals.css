@@ -128,8 +128,11 @@ textarea {
   }
 
   input::placeholder,
-  textarea::placeholder {
-    color: rgba(var(--muted), 0.64);
+  textarea::placeholder,
+  input::-webkit-input-placeholder,
+  textarea::-webkit-input-placeholder {
+    color: rgba(var(--muted), 0.42);
+    opacity: 1;
   }
 
   input:hover,
