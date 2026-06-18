@@ -111,6 +111,24 @@ textarea {
     @apply leading-7;
   }
 
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  div,
+  label,
+  td,
+  th,
+  li {
+    user-select: text;
+    -webkit-user-select: text;
+    -webkit-user-drag: none;
+  }
+
   button:focus-visible,
   a:focus-visible,
   input:focus-visible,
