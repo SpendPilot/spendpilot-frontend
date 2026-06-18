@@ -64,12 +64,23 @@ export default function LoginPage() {
           <div className="space-y-4">
             <button
               type="button"
-              onClick={() => void login()}
+              onClick={() => void login("organization")}
               className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 font-medium text-white transition hover:bg-sky-600 dark:bg-white dark:text-slate-950"
             >
-              {authMode === "dev-local" ? "Use local developer profile" : "Continue with Work Account"}
+              {authMode === "dev-local" ? "Use local developer profile" : "Continue with Work or Guest Account"}
               <ArrowRight className="h-4 w-4" />
             </button>
+
+            {authMode !== "dev-local" ? (
+              <button
+                type="button"
+                onClick={() => void login("personal")}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium transition hover:border-sky-400 hover:text-sky-700 dark:border-slate-700 dark:hover:border-sky-500 dark:hover:text-sky-200"
+              >
+                Continue with Personal Microsoft Account
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            ) : null}
 
             {authMode === "dev-local" ? (
               <button
@@ -107,7 +118,7 @@ export default function LoginPage() {
             <div className="mt-2 font-medium">{authMode}</div>
             {authMode !== "dev-local" ? (
               <div className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-                Company workspaces are created from tenant-scoped work or guest sign-in only. Personal standalone workspace creation is disabled.
+                First sign-in in a real organization tenant becomes the workspace owner. Later users in that same tenant are onboarded as employees. Personal Microsoft accounts can join an organization workspace only when they sign in through that organization tenant context.
               </div>
             ) : null}
           </div>

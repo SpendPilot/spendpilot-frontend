@@ -51,7 +51,7 @@ type AuthShape = {
   profile: AuthProfile | null;
   ready: boolean;
   error: string | null;
-  login: () => Promise<void>;
+  login: (mode?: "organization" | "personal") => Promise<void>;
   logout: () => Promise<void>;
   devLogin: (profile?: { email?: string; display_name?: string; role?: string }) => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -182,7 +182,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [apiScope, authMode]);
 
-  const login = async () => {
+  const login = async (mode: "organization" | "personal" = "organization") => {
     setError(null);
     if (authMode === "dev-local") {
       await devLogin();
@@ -196,7 +196,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     await app.loginRedirect({
-      authority: "https://login.microsoftonline.com/organizations",
+      authority:
+        mode === "personal"
+          ? runtimeConfig.entraAuthority || "https://login.microsoftonline.com/common"
+          : "https://login.microsoftonline.com/organizations",
       scopes: [apiScope],
       prompt: "select_account",
     });
