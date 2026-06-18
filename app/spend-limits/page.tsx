@@ -12,10 +12,6 @@ type SpendLimit = {
   category?: string | null;
   max_single_expense_amount?: number | null;
   monthly_limit?: number | null;
-  requires_approval_above_amount?: number | null;
-  active: boolean;
-  recurring_creation_restricted: boolean;
-  variable_requires_org_owner: boolean;
   department?: { id: string; name: string } | null;
 };
 
@@ -29,10 +25,6 @@ type SpendLimitForm = {
   category: string;
   max_single_expense_amount: string;
   monthly_limit: string;
-  requires_approval_above_amount: string;
-  recurring_creation_restricted: boolean;
-  variable_requires_org_owner: boolean;
-  active: boolean;
 };
 
 const emptyForm: SpendLimitForm = {
@@ -40,10 +32,6 @@ const emptyForm: SpendLimitForm = {
   category: "",
   max_single_expense_amount: "",
   monthly_limit: "",
-  requires_approval_above_amount: "",
-  recurring_creation_restricted: false,
-  variable_requires_org_owner: false,
-  active: true,
 };
 
 function toForm(item?: SpendLimit): SpendLimitForm {
@@ -53,11 +41,6 @@ function toForm(item?: SpendLimit): SpendLimitForm {
     category: item.category || "",
     max_single_expense_amount: item.max_single_expense_amount != null ? String(item.max_single_expense_amount) : "",
     monthly_limit: item.monthly_limit != null ? String(item.monthly_limit) : "",
-    requires_approval_above_amount:
-      item.requires_approval_above_amount != null ? String(item.requires_approval_above_amount) : "",
-    recurring_creation_restricted: item.recurring_creation_restricted,
-    variable_requires_org_owner: item.variable_requires_org_owner,
-    active: item.active,
   };
 }
 
@@ -107,10 +90,6 @@ export default function SpendLimitsPage() {
       category: form.category || null,
       max_single_expense_amount: form.max_single_expense_amount || null,
       monthly_limit: form.monthly_limit || null,
-      requires_approval_above_amount: form.requires_approval_above_amount || null,
-      recurring_creation_restricted: form.recurring_creation_restricted,
-      variable_requires_org_owner: form.variable_requires_org_owner,
-      active: form.active,
     };
   }
 
@@ -156,12 +135,35 @@ export default function SpendLimitsPage() {
     }
   }
 
+  async function deleteLimit(limitId: string) {
+    if (!token) return;
+    if (!window.confirm("Delete this spend limit?")) return;
+
+    setSaving(true);
+    setError(null);
+    try {
+      await apiFetch(`/api/finance/spend-limits/${limitId}`, {
+        method: "DELETE",
+        token,
+      });
+      if (editingId === limitId) {
+        setEditingId(null);
+        setEditForm(emptyForm());
+      }
+      load();
+    } catch (nextError) {
+      setError(getApiError(nextError));
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (loading) return <LoadingState label="Loading spend limits..." />;
   if (error) return <ErrorState label={error} />;
   if (profile?.effective_role !== "org_owner") {
     return (
       <AppShell>
-        <EmptyState title="Spend limits are owner-managed" description="Your current role can follow approvals and budgets, but only the owner can change company policy." />
+        <EmptyState title="Spend limits are owner-managed" description="Your current role can follow approvals and budgets, but only the owner can change spend-limit policy." />
       </AppShell>
     );
   }
@@ -171,7 +173,7 @@ export default function SpendLimitsPage() {
       <div className="space-y-6">
         <PageHeader
           title="Spend Limits"
-          description="Use one company-wide threshold for org-owner review, then add department or department-plus-category rules only where you need tighter control."
+          description="Keep this simple: define department or company spending caps by category, then update or delete them whenever finance policy changes."
         />
 
         <form onSubmit={createSpendLimit} className="panel grid gap-4 p-6 lg:grid-cols-2 xl:grid-cols-4">
@@ -215,57 +217,15 @@ export default function SpendLimitsPage() {
               inputMode="decimal"
             />
           </div>
-          <div className="xl:col-span-2">
-            <label className="mb-2 block text-xs font-medium uppercase tracking-[0.22em] text-[rgb(var(--muted))]">Approval threshold</label>
-            <input
-              value={createForm.requires_approval_above_amount}
-              onChange={(event) => setCreateForm((current) => ({ ...current, requires_approval_above_amount: event.target.value }))}
-              placeholder="Leave blank unless this rule should force org-owner review above a value"
-              inputMode="decimal"
-            />
-          </div>
-          <div className="xl:col-span-2 rounded-[24px] border border-[rgba(var(--line),0.9)] bg-[rgba(var(--panel-muted),0.55)] px-4 py-3 text-sm text-[rgb(var(--muted-strong))]">
-            Leave both department and category blank if this should be the one company-wide approval threshold for everyone.
-          </div>
-          <div className="xl:col-span-4 grid gap-3 md:grid-cols-3">
-            <label className="panel-soft flex items-center gap-3 rounded-[22px] px-4 py-3 text-sm">
-              <input
-                type="checkbox"
-                checked={createForm.recurring_creation_restricted}
-                onChange={(event) =>
-                  setCreateForm((current) => ({ ...current, recurring_creation_restricted: event.target.checked }))
-                }
-              />
-              Block new recurring expenses
-            </label>
-            <label className="panel-soft flex items-center gap-3 rounded-[22px] px-4 py-3 text-sm">
-              <input
-                type="checkbox"
-                checked={createForm.variable_requires_org_owner}
-                onChange={(event) =>
-                  setCreateForm((current) => ({ ...current, variable_requires_org_owner: event.target.checked }))
-                }
-              />
-              Always require org-owner review
-            </label>
-            <label className="panel-soft flex items-center gap-3 rounded-[22px] px-4 py-3 text-sm">
-              <input
-                type="checkbox"
-                checked={createForm.active}
-                onChange={(event) => setCreateForm((current) => ({ ...current, active: event.target.checked }))}
-              />
-              Active now
-            </label>
-          </div>
           <div className="xl:col-span-4 flex justify-end">
             <button className="btn-primary min-w-44" disabled={saving}>
-              {saving ? "Saving rule..." : "Create spend limit"}
+              {saving ? "Saving limit..." : "Create spend limit"}
             </button>
           </div>
         </form>
 
         {!items.length ? (
-          <EmptyState title="No spend limits yet" description="Create a company-wide threshold first, then add department policies only where finance really needs them." />
+          <EmptyState title="No spend limits yet" description="Create the first simple spend cap for a department or for the whole company." />
         ) : (
           <div className="grid gap-4">
             {items.map((item) => {
@@ -277,7 +237,6 @@ export default function SpendLimitsPage() {
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                       <div>
                         <div className="font-display text-2xl">{summarizeRule(item)}</div>
-                        <div className="mt-2 text-sm text-slate-500">{item.active ? "Active" : "Inactive"}</div>
                       </div>
                       <div className="flex flex-wrap gap-3">
                         {editing ? (
@@ -287,7 +246,7 @@ export default function SpendLimitsPage() {
                               disabled={saving}
                               onClick={() => {
                                 setEditingId(null);
-                                setEditForm(emptyForm);
+                                setEditForm(emptyForm());
                               }}
                             >
                               Cancel
@@ -297,15 +256,20 @@ export default function SpendLimitsPage() {
                             </button>
                           </>
                         ) : (
-                          <button
-                            className="btn-secondary"
-                            onClick={() => {
-                              setEditingId(item.id);
-                              setEditForm(toForm(item));
-                            }}
-                          >
-                            Edit rule
-                          </button>
+                          <>
+                            <button
+                              className="btn-secondary"
+                              onClick={() => {
+                                setEditingId(item.id);
+                                setEditForm(toForm(item));
+                              }}
+                            >
+                              Edit limit
+                            </button>
+                            <button className="btn-secondary" disabled={saving} onClick={() => void deleteLimit(item.id)}>
+                              Delete limit
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
@@ -352,54 +316,11 @@ export default function SpendLimitsPage() {
                             inputMode="decimal"
                           />
                         </div>
-                        <div className="xl:col-span-2">
-                          <label className="mb-2 block text-xs font-medium uppercase tracking-[0.22em] text-[rgb(var(--muted))]">Approval threshold</label>
-                          <input
-                            value={currentForm.requires_approval_above_amount}
-                            onChange={(event) =>
-                              setEditForm((current) => ({ ...current, requires_approval_above_amount: event.target.value }))
-                            }
-                            inputMode="decimal"
-                          />
-                        </div>
-                        <div className="xl:col-span-4 grid gap-3 md:grid-cols-3">
-                          <label className="panel-soft flex items-center gap-3 rounded-[22px] px-4 py-3 text-sm">
-                            <input
-                              type="checkbox"
-                              checked={currentForm.recurring_creation_restricted}
-                              onChange={(event) =>
-                                setEditForm((current) => ({ ...current, recurring_creation_restricted: event.target.checked }))
-                              }
-                            />
-                            Block new recurring expenses
-                          </label>
-                          <label className="panel-soft flex items-center gap-3 rounded-[22px] px-4 py-3 text-sm">
-                            <input
-                              type="checkbox"
-                              checked={currentForm.variable_requires_org_owner}
-                              onChange={(event) =>
-                                setEditForm((current) => ({ ...current, variable_requires_org_owner: event.target.checked }))
-                              }
-                            />
-                            Always require org-owner review
-                          </label>
-                          <label className="panel-soft flex items-center gap-3 rounded-[22px] px-4 py-3 text-sm">
-                            <input
-                              type="checkbox"
-                              checked={currentForm.active}
-                              onChange={(event) => setEditForm((current) => ({ ...current, active: event.target.checked }))}
-                            />
-                            Active now
-                          </label>
-                        </div>
                       </div>
                     ) : (
                       <div className="grid gap-2 text-sm text-slate-600 dark:text-slate-300">
                         <div>Max single expense: {item.max_single_expense_amount ?? "-"}</div>
                         <div>Monthly limit: {item.monthly_limit ?? "-"}</div>
-                        <div>Approval threshold: {item.requires_approval_above_amount ?? "-"}</div>
-                        <div>Recurring creation: {item.recurring_creation_restricted ? "Blocked" : "Allowed"}</div>
-                        <div>Org-owner review: {item.variable_requires_org_owner ? "Always required" : "Only when policy says so"}</div>
                       </div>
                     )}
                   </div>
