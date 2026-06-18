@@ -39,7 +39,11 @@ export default function ApprovalsPage() {
 
   useEffect(() => {
     if (!token) return;
-    load();
+    setLoading(true);
+    apiFetch<ExpenseItem[]>("/api/finance/expenses/variable", { token })
+      .then(setItems)
+      .catch((err) => setError(getApiError(err)))
+      .finally(() => setLoading(false));
   }, [token]);
 
   const pending = useMemo(() => {

@@ -81,7 +81,18 @@ export default function SpendLimitsPage() {
       setLoading(false);
       return;
     }
-    load();
+    if (!token) return;
+    setLoading(true);
+    Promise.all([
+      apiFetch<SpendLimit[]>("/api/finance/spend-limits", { token }),
+      apiFetch<Department[]>("/api/admin/departments", { token }).catch(() => []),
+    ])
+      .then(([nextItems, nextDepartments]) => {
+        setItems(nextItems);
+        setDepartments(nextDepartments);
+      })
+      .catch((err) => setError(getApiError(err)))
+      .finally(() => setLoading(false));
   }, [token, profile?.effective_role]);
 
   function buildPayload(form: SpendLimitForm) {
@@ -148,7 +159,7 @@ export default function SpendLimitsPage() {
       });
       if (editingId === limitId) {
         setEditingId(null);
-        setEditForm(emptyForm());
+        setEditForm(emptyForm);
       }
       load();
     } catch (nextError) {
@@ -246,7 +257,7 @@ export default function SpendLimitsPage() {
                               disabled={saving}
                               onClick={() => {
                                 setEditingId(null);
-                                setEditForm(emptyForm());
+                                setEditForm(emptyForm);
                               }}
                             >
                               Cancel

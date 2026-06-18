@@ -102,7 +102,20 @@ export default function ExpensesPage() {
 
   useEffect(() => {
     if (!token) return;
-    load();
+    setLoading(true);
+    Promise.all([
+      apiFetch<Workspace>("/api/finance/expenses", { token }),
+      apiFetch<Category[]>("/api/finance/categories", { token }).catch(() => []),
+    ])
+      .then(([nextWorkspace, nextCategories]) => {
+        setWorkspace(nextWorkspace);
+        setCategories(nextCategories);
+        if (nextCategories[0]) {
+          setEmployeeForm((current) => (current.category_id ? current : { ...current, category_id: nextCategories[0].id }));
+        }
+      })
+      .catch((err) => setError(getApiError(err)))
+      .finally(() => setLoading(false));
   }, [token]);
 
   async function submitEmployeeExpense(event: React.FormEvent<HTMLFormElement>) {

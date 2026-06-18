@@ -94,7 +94,18 @@ export default function BudgetsPage() {
   }
 
   useEffect(() => {
-    load();
+    if (!token) return;
+    setLoading(true);
+    Promise.all([
+      apiFetch<BudgetItem[]>("/api/finance/budgets", { token }),
+      isOwner ? apiFetch<Department[]>("/api/admin/departments", { token }).catch(() => []) : Promise.resolve([]),
+    ])
+      .then(([nextItems, nextDepartments]) => {
+        setItems(nextItems);
+        setDepartments(nextDepartments);
+      })
+      .catch((err) => setError(getApiError(err)))
+      .finally(() => setLoading(false));
   }, [token, isOwner]);
 
   const totals = useMemo(() => {
