@@ -129,7 +129,7 @@ textarea {
 
   input::placeholder,
   textarea::placeholder {
-    color: rgba(var(--muted), 0.92);
+    color: rgba(var(--muted), 0.64);
   }
 
   input:hover,
