@@ -4,40 +4,40 @@ export default function HomePage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
       <div className="grid w-full max-w-6xl gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-        <section className="panel panel-grid overflow-hidden p-10">
+        <section className="panel panel-grid relative overflow-hidden p-10 sm:p-12">
+          <div aria-hidden="true" className="absolute right-[-8%] top-[-10%] h-56 w-56 rounded-full bg-[rgba(var(--primary),0.12)] blur-3xl" />
           <div className="space-y-8">
             <div>
-              <p className="text-sm uppercase tracking-[0.35em] text-sky-500">Spend control platform</p>
-              <h1 className="mt-4 font-display text-5xl leading-tight text-slate-950 dark:text-white">
-                Give finance teams one Entra-backed workspace for spend, approvals, and AI-assisted invoice review.
+              <p className="section-kicker text-[rgb(var(--primary))]">Spend control workspace</p>
+              <h1 className="mt-4 font-display text-5xl leading-tight tracking-tight text-slate-950 dark:text-white">
+                Keep budgets, approvals, expenses, and bill review in one calm operational workspace.
               </h1>
             </div>
-            <p className="max-w-2xl text-lg text-slate-600 dark:text-slate-300">
-              Capture receipts, extract invoice fields, route approvals, track budgets, and keep everything behind
-              Azure Front Door, kGateway, and tenant-aware RBAC.
+            <p className="max-w-2xl text-lg text-[rgb(var(--muted-strong))]">
+              Track spending, review documents, and move requests through the right approval path without losing context across teams.
             </p>
             <div className="grid gap-4 sm:grid-cols-3">
               {[
-                ["Entra-native", "Use Microsoft Entra ID, tenant-aware membership bootstrap, and app roles."],
-                ["Finance-focused", "Manage budgets, expenses, approvals, documents, and audit signals together."],
-                ["Azure-first", "Prefer Workload Identity, Blob Storage, Document Intelligence, and AI Foundry."],
+                ["Role-aware access", "Each workspace adapts to owners, department leads, and employees."],
+                ["Operational visibility", "See current budget pressure, approval queues, and upcoming payment work."],
+                ["Document review", "Upload bills and keep extracted details close to the expense workflow."],
               ].map(([title, description]) => (
-                <div key={title} className="rounded-3xl border border-slate-200/80 p-5 dark:border-slate-800">
-                  <div className="font-display text-xl">{title}</div>
-                  <div className="mt-2 text-sm text-slate-500 dark:text-slate-300">{description}</div>
+                <div key={title} className="panel-soft rounded-[24px] p-5">
+                  <div className="font-display text-xl tracking-tight">{title}</div>
+                  <div className="mt-2 text-sm text-[rgb(var(--muted-strong))]">{description}</div>
                 </div>
               ))}
             </div>
           </div>
         </section>
-        <section className="panel p-10">
-          <div className="text-sm uppercase tracking-[0.35em] text-slate-400">Start here</div>
-          <h2 className="mt-4 font-display text-3xl">Open the finance workspace</h2>
-          <p className="mt-3 text-slate-600 dark:text-slate-300">
-            The frontend uses same-origin API calls and is designed for Azure Front Door plus kGateway routing.
+        <section className="panel p-10 sm:p-12">
+          <div className="section-kicker">Start here</div>
+          <h2 className="mt-4 font-display text-3xl tracking-tight">Open your workspace</h2>
+          <p className="mt-3 text-[rgb(var(--muted-strong))]">
+            Sign in to review current spending, manage approvals, or continue your department onboarding.
           </p>
           <Link
-            className="mt-8 inline-flex rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white dark:bg-white dark:text-slate-950"
+            className="btn-primary mt-8"
             href="/login"
           >
             Sign in

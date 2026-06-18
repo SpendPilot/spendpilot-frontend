@@ -6,9 +6,9 @@ export function MetricStrip({ metrics }: { metrics: { label: string; value: numb
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
       {metrics.map((metric) => (
-        <div key={metric.label} className="panel p-5">
-          <div className="text-sm text-slate-400">{metric.label}</div>
-          <div className="mt-3 font-display text-3xl">{metric.value}</div>
+        <div key={metric.label} className="metric-card">
+          <div className="text-sm text-[rgb(var(--muted))]">{metric.label}</div>
+          <div className="mt-3 font-display text-3xl tracking-tight">{metric.value}</div>
         </div>
       ))}
     </div>
@@ -30,24 +30,39 @@ export function ChartPanel({
 }) {
   return (
     <div className="panel p-6">
-      <h2 className="font-display text-2xl">{title}</h2>
+      <div className="section-kicker">Performance view</div>
+      <h2 className="mt-2 font-display text-2xl tracking-tight">{title}</h2>
       <div className="mt-6 h-72">
         <ResponsiveContainer width="100%" height="100%">
           {kind === "line" ? (
             <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
-              <XAxis dataKey={xKey} />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey={yKey} stroke="#0ea5e9" strokeWidth={3} dot={false} />
+              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} vertical={false} />
+              <XAxis dataKey={xKey} axisLine={false} tickLine={false} tickMargin={12} />
+              <YAxis axisLine={false} tickLine={false} tickMargin={10} />
+              <Tooltip
+                cursor={{ fill: "rgba(32, 95, 70, 0.08)" }}
+                contentStyle={{
+                  borderRadius: "18px",
+                  border: "1px solid rgba(189, 198, 181, 0.7)",
+                  boxShadow: "0 18px 40px rgba(57, 67, 49, 0.12)",
+                }}
+              />
+              <Line type="monotone" dataKey={yKey} stroke="#205f46" strokeWidth={3} dot={false} />
             </LineChart>
           ) : (
             <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
-              <XAxis dataKey={xKey} />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey={yKey} fill="#f97316" radius={[10, 10, 0, 0]} />
+              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} vertical={false} />
+              <XAxis dataKey={xKey} axisLine={false} tickLine={false} tickMargin={12} />
+              <YAxis axisLine={false} tickLine={false} tickMargin={10} />
+              <Tooltip
+                cursor={{ fill: "rgba(32, 95, 70, 0.08)" }}
+                contentStyle={{
+                  borderRadius: "18px",
+                  border: "1px solid rgba(189, 198, 181, 0.7)",
+                  boxShadow: "0 18px 40px rgba(57, 67, 49, 0.12)",
+                }}
+              />
+              <Bar dataKey={yKey} fill="#bf6d34" radius={[12, 12, 4, 4]} />
             </BarChart>
           )}
         </ResponsiveContainer>

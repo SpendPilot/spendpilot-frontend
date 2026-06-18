@@ -99,31 +99,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen px-3 py-3 sm:px-4 sm:py-4 lg:px-6">
       {mobileMenuOpen ? (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            aria-label="Close navigation menu"
-            className="absolute inset-0 bg-slate-950/45 backdrop-blur-sm"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <aside className="absolute inset-y-0 left-0 flex w-[88%] max-w-sm flex-col bg-white/95 p-5 shadow-2xl backdrop-blur-2xl dark:bg-slate-950/95">
+          <button type="button" aria-label="Close navigation menu" className="absolute inset-0 bg-black/35 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
+          <aside className="absolute inset-y-0 left-0 flex w-[88%] max-w-sm flex-col bg-[rgba(var(--panel),0.98)] p-5 shadow-2xl backdrop-blur-2xl">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs uppercase tracking-[0.35em] text-sky-500">Spend Control</div>
-                <div className="mt-2 font-display text-2xl text-slate-950 dark:text-white">Finance OS</div>
+                <div className="section-kicker text-[rgb(var(--primary))]">Spend Control</div>
+                <div className="mt-2 font-display text-2xl tracking-tight">Finance workspace</div>
               </div>
               <button
                 type="button"
-                className="rounded-2xl border border-slate-200 p-3 dark:border-slate-800"
+                className="btn-secondary h-11 w-11 rounded-2xl px-0 py-0"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="mt-5 rounded-[28px] bg-slate-950 p-5 text-white dark:bg-slate-900">
-              <div className="text-sm text-sky-300">{profile.organization.name}</div>
+            <div className="mt-5 rounded-[28px] bg-[rgb(var(--primary))] p-5 text-white shadow-[0_18px_40px_rgba(32,95,70,0.28)]">
+              <div className="text-sm text-white/80">{profile.organization.name}</div>
               <div className="mt-2 font-medium">{profile.user.display_name}</div>
-              <div className="text-sm text-slate-300">{profile.effective_role}</div>
+              <div className="text-sm text-white/72">{profile.effective_role}</div>
             </div>
 
             <nav className="mt-5 flex-1 space-y-2 overflow-y-auto pr-1">
@@ -135,10 +130,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition",
+                      "flex items-center justify-between rounded-[22px] px-4 py-3 text-sm transition",
                       active
-                        ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20"
-                        : "bg-slate-100/80 text-slate-700 hover:bg-slate-200 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800",
+                        ? "bg-[rgb(var(--primary-soft))] text-[rgb(var(--primary-strong))]"
+                        : "bg-[rgba(var(--panel-muted),0.72)] text-[rgb(var(--muted-strong))] hover:bg-[rgba(var(--panel-muted),0.96)]",
                     )}
                   >
                     <span className="flex items-center gap-3">
@@ -154,7 +149,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="mt-5 grid gap-3">
               <button
                 type="button"
-                className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium dark:border-slate-800"
+                className="btn-secondary"
                 onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
               >
                 {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -162,7 +157,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </button>
               <button
                 type="button"
-                className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-medium text-white dark:bg-white dark:text-slate-950"
+                className="btn-primary"
                 onClick={() => void logout().then(() => router.push("/login"))}
               >
                 Sign out
@@ -172,14 +167,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       ) : null}
 
-      <div className="mx-auto grid min-h-[calc(100vh-1.5rem)] max-w-[1600px] gap-3 lg:min-h-[calc(100vh-2rem)] lg:gap-4 lg:grid-cols-[300px_1fr]">
+      <div className="mx-auto grid min-h-[calc(100vh-1.5rem)] max-w-[1600px] gap-3 lg:min-h-[calc(100vh-2rem)] lg:gap-4 lg:grid-cols-[312px_1fr]">
         <aside className="panel hidden flex-col justify-between p-6 lg:flex">
           <div>
-            <div className="rounded-3xl bg-slate-950 p-5 text-white dark:bg-slate-800">
-              <div className="text-xs uppercase tracking-[0.35em] text-sky-300">Spend Control</div>
-              <div className="mt-3 font-display text-2xl">Finance OS</div>
-              <p className="mt-2 text-sm text-slate-300">
-                Tenant-aware finance workflows with Entra ID, approvals, budgets, and AI-assisted invoice extraction.
+            <div className="rounded-[30px] bg-[linear-gradient(180deg,rgba(32,95,70,1),rgba(18,72,51,1))] p-6 text-white shadow-[0_24px_48px_rgba(32,95,70,0.24)]">
+              <div className="section-kicker text-white/65">Spend Control</div>
+              <div className="mt-3 font-display text-[30px] tracking-tight">Finance workspace</div>
+              <p className="mt-3 text-sm leading-6 text-white/72">
+                Review spending activity, route approvals, monitor budgets, and keep the organization aligned on payment decisions.
               </p>
             </div>
             <nav className="mt-6 space-y-2">
@@ -191,10 +186,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition",
+                      "flex items-center gap-3 rounded-[22px] px-4 py-3 text-sm transition",
                       active
-                        ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20"
-                        : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
+                        ? "bg-[rgb(var(--primary-soft))] text-[rgb(var(--primary-strong))]"
+                        : "text-[rgb(var(--muted-strong))] hover:bg-[rgba(var(--panel-muted),0.84)]",
                     )}
                   >
                     <Icon className="h-4 w-4" />
@@ -204,10 +199,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               })}
             </nav>
           </div>
-          <div className="rounded-3xl border border-slate-200/80 p-4 dark:border-slate-800">
-            <div className="text-sm text-slate-400">{profile.organization.name}</div>
+          <div className="panel-soft p-4">
+            <div className="text-sm text-[rgb(var(--muted))]">{profile.organization.name}</div>
             <div className="mt-1 font-medium">{profile.user.display_name}</div>
-            <div className="text-sm text-slate-500">{profile.effective_role}</div>
+            <div className="text-sm text-[rgb(var(--muted-strong))]">{profile.effective_role}</div>
           </div>
         </aside>
         <div className="space-y-3 lg:space-y-4">
@@ -218,30 +213,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <button
                     type="button"
                     aria-label="Open navigation menu"
-                    className="rounded-2xl border border-slate-200 p-3 dark:border-slate-700"
+                    className="btn-secondary h-11 w-11 rounded-2xl px-0 py-0"
                     onClick={() => setMobileMenuOpen(true)}
                   >
                     <Menu className="h-4 w-4" />
                   </button>
-                  <div className="rounded-full border border-sky-300/70 bg-sky-500/10 px-3 py-1 text-xs font-medium text-sky-700 dark:border-sky-700 dark:text-sky-200">
+                  <div className="badge-tonal">
                     {profile.organization.name}
                   </div>
                 </div>
-                <div className="mt-3 text-xs uppercase tracking-[0.3em] text-slate-400 lg:mt-0">Business finance control</div>
-                <div className="mt-1 font-display text-xl sm:text-2xl">Spend Control Platform</div>
-                <div className="mt-2 text-sm text-slate-500 dark:text-slate-400 lg:hidden">
+                <div className="section-kicker mt-3 lg:mt-0">Operational finance</div>
+                <div className="mt-1 font-display text-xl tracking-tight sm:text-2xl">Spend Control</div>
+                <div className="mt-2 text-sm text-[rgb(var(--muted-strong))] lg:hidden">
                   {profile.user.display_name} - {profile.effective_role}
                 </div>
               </div>
               <div className="hidden items-center gap-3 sm:flex">
                 <button
-                  className="rounded-2xl border border-slate-200 p-3 dark:border-slate-700"
+                  className="btn-secondary h-11 w-11 rounded-2xl px-0 py-0"
                   onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
                 >
                   {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 </button>
                 <button
-                  className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-medium text-white dark:bg-white dark:text-slate-950"
+                  className="btn-primary"
                   onClick={() => void logout().then(() => router.push("/login"))}
                 >
                   Sign out
@@ -260,8 +255,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     className={cn(
                       "flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm transition",
                       active
-                        ? "border-sky-500 bg-sky-500 text-white shadow-lg shadow-sky-500/20"
-                        : "border-slate-200 bg-white/80 text-slate-600 dark:border-slate-700 dark:bg-slate-900/75 dark:text-slate-300",
+                        ? "border-[rgba(var(--primary),0.15)] bg-[rgb(var(--primary-soft))] text-[rgb(var(--primary-strong))]"
+                        : "bg-[rgba(var(--panel),0.86)] text-[rgb(var(--muted-strong))]",
                     )}
                   >
                     <Icon className="h-4 w-4" />
@@ -273,13 +268,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             <div className="mt-4 flex items-center gap-3 sm:hidden">
               <button
-                className="rounded-2xl border border-slate-200 p-3 dark:border-slate-700"
+                className="btn-secondary h-11 w-11 rounded-2xl px-0 py-0"
                 onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
               >
                 {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </button>
               <button
-                className="flex-1 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-medium text-white dark:bg-white dark:text-slate-950"
+                className="btn-primary flex-1"
                 onClick={() => void logout().then(() => router.push("/login"))}
               >
                 Sign out

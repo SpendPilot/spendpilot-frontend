@@ -104,25 +104,25 @@ export default function ScanPage() {
       <div className="space-y-6">
         <PageHeader
           title="Capture spend"
-          description="Upload an invoice or receipt, run Document Intelligence extraction, and optionally create a draft expense in one flow."
+          description="Upload a bill or receipt, extract the available spend details, and optionally open a draft expense from the same flow."
         />
 
         <form onSubmit={onSubmit} className="panel grid gap-6 p-6 xl:grid-cols-[1fr_0.9fr]">
           <div className="space-y-4">
-            <label className="block rounded-3xl border border-dashed border-slate-300 p-6 dark:border-slate-700">
-              <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Invoice or receipt</span>
+            <label className="block rounded-[26px] border border-dashed p-6">
+              <span className="text-sm font-medium text-[rgb(var(--muted-strong))]">Invoice or receipt</span>
               <input
                 type="file"
                 accept=".pdf,.txt,.md,.doc,.docx,.png,.jpg,.jpeg"
                 className="mt-4 block w-full text-sm"
                 onChange={(event) => setFile(event.target.files?.[0] ?? null)}
               />
-              <p className="mt-3 text-sm text-slate-500">
-                PDFs and images are analyzed with the Document Intelligence invoice model when Azure is configured.
+              <p className="mt-3 text-sm text-[rgb(var(--muted))]">
+                Use a clear file so the system can pick up vendor, amount, date, and other available bill details.
               </p>
             </label>
 
-            <label className="flex items-center gap-3 rounded-2xl bg-slate-100 px-4 py-3 text-sm dark:bg-slate-800/60">
+            <label className="panel-soft flex items-center gap-3 rounded-[22px] px-4 py-3 text-sm">
               <input
                 type="checkbox"
                 checked={autoScan}
@@ -131,7 +131,7 @@ export default function ScanPage() {
               Run AI scan automatically after upload
             </label>
 
-            <label className="flex items-center gap-3 rounded-2xl bg-slate-100 px-4 py-3 text-sm dark:bg-slate-800/60">
+            <label className="panel-soft flex items-center gap-3 rounded-[22px] px-4 py-3 text-sm">
               <input
                 type="checkbox"
                 checked={createExpenseDraft}
@@ -142,15 +142,15 @@ export default function ScanPage() {
           </div>
 
           <div className="space-y-5">
-            <div className="rounded-3xl bg-slate-100 p-5 text-sm dark:bg-slate-800/70">
+            <div className="panel-soft rounded-[24px] p-5 text-sm">
               <div className="font-medium">Current status</div>
-              <div className="mt-2 text-slate-600 dark:text-slate-300">{status}</div>
+              <div className="mt-2 text-[rgb(var(--muted-strong))]">{status}</div>
             </div>
 
             {preview ? (
-              <div className="rounded-3xl bg-slate-100 p-5 text-sm dark:bg-slate-800/70">
+              <div className="panel-soft rounded-[24px] p-5 text-sm">
                 <div className="font-medium">Extracted preview</div>
-                <div className="mt-3 space-y-2 text-slate-600 dark:text-slate-300">
+                <div className="mt-3 space-y-2 text-[rgb(var(--muted-strong))]">
                   <div>Vendor: {preview.vendor_name || "Not detected"}</div>
                   <div>Invoice: {preview.invoice_number || "Not detected"}</div>
                   <div>
@@ -164,7 +164,7 @@ export default function ScanPage() {
 
             {error ? <ErrorState label={error} /> : null}
 
-            <button className="w-full rounded-2xl bg-slate-950 px-4 py-3 font-medium text-white dark:bg-white dark:text-slate-950">
+            <button className="btn-primary w-full">
               {submitting ? "Processing..." : "Upload and extract"}
             </button>
           </div>

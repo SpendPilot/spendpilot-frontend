@@ -74,10 +74,10 @@ export default function DashboardPage() {
         : `${profile?.membership.department?.name || "Department"} budget view`;
   const description =
     profile?.effective_role === "org_owner"
-      ? "Company-wide spend, approvals, budgets, and payment timing for the current tenant."
+      ? "See current spending, approval load, budget pressure, and upcoming payment work across the organization."
       : profile?.effective_role === "dept_head"
-        ? "Department-scoped budget, requests, and upcoming spend visibility."
-        : "A focused view of your department budget and current spending pressure.";
+        ? "Track department requests, watch budget usage, and stay ahead of upcoming spend."
+        : "Stay focused on your department budget, pending requests, and the work that needs your attention.";
 
   return (
     <AppShell>
@@ -114,9 +114,9 @@ export default function DashboardPage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <div className="font-medium">{item.label}</div>
-                  <div className="mt-1 text-sm text-slate-500">{item.reason}</div>
+                  <div className="mt-1 text-sm text-[rgb(var(--muted-strong))]">{item.reason}</div>
                 </div>
-                <div className="text-sm uppercase tracking-[0.2em] text-slate-500">{item.priority}</div>
+                <div className="badge-tonal">{item.priority}</div>
               </div>
             </div>
           ))}

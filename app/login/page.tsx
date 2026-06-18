@@ -36,27 +36,27 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-12">
       <div className="grid w-full max-w-6xl gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-        <section className="panel panel-grid relative overflow-hidden p-10">
-          <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 via-transparent to-orange-500/10" />
+        <section className="panel panel-grid relative overflow-hidden p-10 sm:p-12">
+          <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(140deg,rgba(32,95,70,0.10),transparent_55%,rgba(191,109,52,0.08))]" />
           <div className="relative space-y-6">
-            <span className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-500/10 px-4 py-2 text-sm font-medium text-sky-700 dark:text-sky-200">
+            <span className="badge-tonal">
               <ShieldCheck className="h-4 w-4" />
-              Microsoft Entra ID with Azure finance workflows and AI document extraction
+              Secure workspace sign-in
             </span>
             <div className="space-y-4">
-              <h1 className="font-display text-5xl leading-tight text-slate-950 dark:text-white">
+              <h1 className="font-display text-5xl leading-tight tracking-tight text-slate-950 dark:text-white">
                 Spend Control Platform
               </h1>
-              <p className="max-w-2xl text-lg text-slate-600 dark:text-slate-300">
-                One finance workspace for budgets, expenses, approvals, and invoice intelligence without backend sprawl.
+              <p className="max-w-2xl text-lg text-[rgb(var(--muted-strong))]">
+                Enter the finance workspace to review budgets, submit expenses, process approvals, and continue document-led workflows.
               </p>
             </div>
           </div>
         </section>
-        <section className="panel p-8">
+        <section className="panel p-8 sm:p-10">
           <div className="mb-8">
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Access</p>
-            <h2 className="mt-2 font-display text-3xl">
+            <p className="section-kicker">Access</p>
+            <h2 className="mt-2 font-display text-3xl tracking-tight">
               {authMode === "dev-local" ? "Enter local development mode" : "Sign in with Microsoft"}
             </h2>
           </div>
@@ -65,7 +65,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => void login("organization")}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 font-medium text-white transition hover:bg-sky-600 dark:bg-white dark:text-slate-950"
+              className="btn-primary w-full"
             >
               {authMode === "dev-local" ? "Use local developer profile" : "Continue with Work or Guest Account"}
               <ArrowRight className="h-4 w-4" />
@@ -75,7 +75,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => void login("personal")}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium transition hover:border-sky-400 hover:text-sky-700 dark:border-slate-700 dark:hover:border-sky-500 dark:hover:text-sky-200"
+                className="btn-secondary w-full"
               >
                 Continue with Personal Microsoft Account
                 <ArrowRight className="h-4 w-4" />
@@ -92,7 +92,7 @@ export default function LoginPage() {
                     role: "org_owner",
                   }).then(() => router.push("/dashboard"))
                 }
-                className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium dark:border-slate-700"
+                className="btn-secondary w-full"
               >
                   Seed an organization owner session
               </button>
@@ -100,10 +100,10 @@ export default function LoginPage() {
           </div>
 
           {error ? (
-            <div className="mt-6 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">
+            <div className="mt-6 rounded-[22px] border border-[rgba(var(--danger),0.25)] bg-[rgba(var(--danger-soft),0.92)] px-4 py-3 text-sm text-[rgb(var(--danger))]">
               {error}
               {adminConsentUrl ? (
-                <div className="mt-3 text-xs text-rose-800 dark:text-rose-100">
+                <div className="mt-3 text-xs text-[rgb(var(--danger))]">
                   This tenant has not finished onboarding the app yet. A tenant admin can complete consent here:{" "}
                   <a className="underline" href={adminConsentUrl}>
                     grant tenant consent
@@ -113,11 +113,11 @@ export default function LoginPage() {
             </div>
           ) : null}
 
-          <div className="mt-8 rounded-2xl bg-slate-100 p-4 text-sm text-slate-600 dark:bg-slate-800/70 dark:text-slate-300">
+          <div className="panel-soft mt-8 rounded-[24px] p-4 text-sm text-[rgb(var(--muted-strong))]">
             Auth mode:
             <div className="mt-2 font-medium">{authMode}</div>
             {authMode !== "dev-local" ? (
-              <div className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+              <div className="mt-3 text-xs text-[rgb(var(--muted))]">
                 First sign-in in a real organization tenant becomes the workspace owner. Later users in that same tenant are onboarded as employees. Personal Microsoft accounts can join an organization workspace only when they sign in through that organization tenant context.
               </div>
             ) : null}

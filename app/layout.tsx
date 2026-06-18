@@ -5,8 +5,8 @@ import "./globals.css";
 import { Providers } from "@/app/providers";
 
 export const metadata: Metadata = {
-  title: "Business AI Document Scanner",
-  description: "Simplified business document scanning with Entra ID and Azure AI",
+  title: "Spend Control",
+  description: "Operational finance workspace for budgets, approvals, expenses, and document review.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

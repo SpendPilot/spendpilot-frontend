@@ -75,30 +75,30 @@ export default function OnboardingPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-12">
       <div className="grid w-full max-w-5xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <section className="panel panel-grid relative overflow-hidden p-10">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-sky-500/10" />
+        <section className="panel panel-grid relative overflow-hidden p-10 sm:p-12">
+          <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(135deg,rgba(32,95,70,0.10),transparent_58%,rgba(191,109,52,0.08))]" />
           <div className="relative space-y-6">
-            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-200">
+            <span className="badge-tonal">
               <CheckCircle2 className="h-4 w-4" />
               One last step before entering your workspace
             </span>
             <div className="space-y-4">
-              <h1 className="font-display text-5xl leading-tight text-slate-950 dark:text-white">
+              <h1 className="font-display text-5xl leading-tight tracking-tight text-slate-950 dark:text-white">
                 Choose your department
               </h1>
-              <p className="max-w-2xl text-lg text-slate-600 dark:text-slate-300">
-                SpendPilot uses your department to scope approvals, budgets, and visibility. You can be reassigned later
+              <p className="max-w-2xl text-lg text-[rgb(var(--muted-strong))]">
+                Your department shapes approval routing, budget visibility, and the work queue you see after sign-in. You can be reassigned later
                 by your organization owner.
               </p>
             </div>
           </div>
         </section>
 
-        <section className="panel p-8">
+        <section className="panel p-8 sm:p-10">
           <div className="mb-6">
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Onboarding</p>
-            <h2 className="mt-2 font-display text-3xl">Department selection</h2>
-            <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
+            <p className="section-kicker">Onboarding</p>
+            <h2 className="mt-2 font-display text-3xl tracking-tight">Department selection</h2>
+            <p className="mt-3 text-sm text-[rgb(var(--muted-strong))]">
               Signed in as {profile?.user.display_name}. Your role remains <strong>{profile?.effective_role}</strong>.
             </p>
           </div>
@@ -109,10 +109,10 @@ export default function OnboardingPage() {
               return (
                 <label
                   key={department.id}
-                  className={`block cursor-pointer rounded-3xl border p-5 transition ${
+                  className={`block cursor-pointer rounded-[26px] border p-5 transition ${
                     active
-                      ? "border-emerald-500 bg-emerald-500/10 shadow-lg shadow-emerald-500/10"
-                      : "border-slate-200 bg-white/80 dark:border-slate-800 dark:bg-slate-900/70"
+                      ? "border-[rgba(var(--primary),0.22)] bg-[rgb(var(--primary-soft))] shadow-[0_16px_36px_rgba(32,95,70,0.10)]"
+                      : "bg-[rgba(var(--panel),0.86)]"
                   }`}
                 >
                   <input
@@ -124,12 +124,12 @@ export default function OnboardingPage() {
                     className="sr-only"
                   />
                   <div className="flex items-start gap-3">
-                    <div className="rounded-2xl bg-slate-950/5 p-3 dark:bg-white/5">
+                    <div className="rounded-2xl bg-[rgba(var(--primary),0.12)] p-3 text-[rgb(var(--primary-strong))]">
                       <Building2 className="h-5 w-5" />
                     </div>
                     <div>
                       <div className="font-medium text-slate-950 dark:text-white">{department.name}</div>
-                      <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                      <div className="mt-1 text-sm text-[rgb(var(--muted-strong))]">
                         {department.description || "Department workspace"}
                       </div>
                     </div>
@@ -139,7 +139,7 @@ export default function OnboardingPage() {
             })}
 
             {error ? (
-              <div className="rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">
+              <div className="rounded-[22px] border border-[rgba(var(--danger),0.25)] bg-[rgba(var(--danger-soft),0.92)] px-4 py-3 text-sm text-[rgb(var(--danger))]">
                 {error}
               </div>
             ) : null}
@@ -147,7 +147,7 @@ export default function OnboardingPage() {
             <button
               type="submit"
               disabled={!selectedDepartmentId || submitting}
-              className="inline-flex w-full items-center justify-center rounded-2xl bg-slate-950 px-4 py-3 font-medium text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-950"
+              className="btn-primary w-full"
             >
               {submitting ? "Saving department..." : "Continue to workspace"}
             </button>
