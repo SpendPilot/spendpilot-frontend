@@ -55,6 +55,8 @@ body {
     radial-gradient(circle at top right, rgba(242, 172, 126, 0.12), transparent 26%),
     radial-gradient(circle at bottom left, rgba(32, 95, 70, 0.08), transparent 24%),
     rgb(var(--background));
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 * {

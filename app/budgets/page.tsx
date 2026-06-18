@@ -41,11 +41,11 @@ const emptyForm = (): BudgetForm => ({
   name: "",
   scope: "company",
   department_id: "",
-  currency: "INR",
+  currency: "",
   amount: "",
-  month: String(new Date().getMonth() + 1),
-  year: String(new Date().getFullYear()),
-  alert_threshold_percent: "80",
+  month: "",
+  year: "",
+  alert_threshold_percent: "",
 });
 
 function periodKey(item: Pick<BudgetItem, "currency" | "month" | "year">) {
@@ -277,6 +277,7 @@ export default function BudgetsPage() {
               <input
                 value={form.currency}
                 onChange={(event) => setForm((current) => ({ ...current, currency: event.target.value.toUpperCase() }))}
+                placeholder="INR"
                 maxLength={10}
                 required
               />
@@ -288,6 +289,7 @@ export default function BudgetsPage() {
               <input
                 value={form.month}
                 onChange={(event) => setForm((current) => ({ ...current, month: event.target.value }))}
+                placeholder={String(new Date().getMonth() + 1)}
                 inputMode="numeric"
                 required
               />
@@ -299,6 +301,7 @@ export default function BudgetsPage() {
               <input
                 value={form.year}
                 onChange={(event) => setForm((current) => ({ ...current, year: event.target.value }))}
+                placeholder={String(new Date().getFullYear())}
                 inputMode="numeric"
                 required
               />
@@ -310,6 +313,7 @@ export default function BudgetsPage() {
               <input
                 value={form.alert_threshold_percent}
                 onChange={(event) => setForm((current) => ({ ...current, alert_threshold_percent: event.target.value }))}
+                placeholder="80"
                 inputMode="numeric"
                 required
               />
