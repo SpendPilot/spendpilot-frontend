@@ -133,8 +133,9 @@ textarea {
   textarea::placeholder,
   input::-webkit-input-placeholder,
   textarea::-webkit-input-placeholder {
-    color: rgba(var(--muted), 0.42);
-    opacity: 1;
+    color: rgba(var(--muted), 0.28) !important;
+    opacity: 1 !important;
+    font-style: italic;
   }
 
   input:hover,
