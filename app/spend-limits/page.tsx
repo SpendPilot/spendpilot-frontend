@@ -20,6 +20,11 @@ type Department = {
   name: string;
 };
 
+type Category = {
+  id: string;
+  name: string;
+};
+
 type SpendLimitForm = {
   department_id: string;
   category: string;
@@ -54,6 +59,7 @@ export default function SpendLimitsPage() {
   const { token, profile } = useAuth();
   const [items, setItems] = useState<SpendLimit[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,10 +73,12 @@ export default function SpendLimitsPage() {
     Promise.all([
       apiFetch<SpendLimit[]>("/api/finance/spend-limits", { token }),
       apiFetch<Department[]>("/api/admin/departments", { token }).catch(() => []),
+      apiFetch<Category[]>("/api/finance/categories", { token }).catch(() => []),
     ])
-      .then(([nextItems, nextDepartments]) => {
+      .then(([nextItems, nextDepartments, nextCategories]) => {
         setItems(nextItems);
         setDepartments(nextDepartments);
+        setCategories(nextCategories);
       })
       .catch((err) => setError(getApiError(err)))
       .finally(() => setLoading(false));
@@ -86,10 +94,12 @@ export default function SpendLimitsPage() {
     Promise.all([
       apiFetch<SpendLimit[]>("/api/finance/spend-limits", { token }),
       apiFetch<Department[]>("/api/admin/departments", { token }).catch(() => []),
+      apiFetch<Category[]>("/api/finance/categories", { token }).catch(() => []),
     ])
-      .then(([nextItems, nextDepartments]) => {
+      .then(([nextItems, nextDepartments, nextCategories]) => {
         setItems(nextItems);
         setDepartments(nextDepartments);
+        setCategories(nextCategories);
       })
       .catch((err) => setError(getApiError(err)))
       .finally(() => setLoading(false));
@@ -204,11 +214,17 @@ export default function SpendLimitsPage() {
           </div>
           <div>
             <label className="mb-2 block text-xs font-medium uppercase tracking-[0.22em] text-[rgb(var(--muted))]">Category</label>
-            <input
+            <select
               value={createForm.category}
               onChange={(event) => setCreateForm((current) => ({ ...current, category: event.target.value }))}
-              placeholder="Leave blank for all categories"
-            />
+            >
+              <option value="">All categories</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="mb-2 block text-xs font-medium uppercase tracking-[0.22em] text-[rgb(var(--muted))]">Max single expense</label>
@@ -303,11 +319,17 @@ export default function SpendLimitsPage() {
                         </div>
                         <div>
                           <label className="mb-2 block text-xs font-medium uppercase tracking-[0.22em] text-[rgb(var(--muted))]">Category</label>
-                          <input
+                          <select
                             value={currentForm.category}
                             onChange={(event) => setEditForm((current) => ({ ...current, category: event.target.value }))}
-                            placeholder="All categories"
-                          />
+                          >
+                            <option value="">All categories</option>
+                            {categories.map((category) => (
+                              <option key={category.id} value={category.name}>
+                                {category.name}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                         <div>
                           <label className="mb-2 block text-xs font-medium uppercase tracking-[0.22em] text-[rgb(var(--muted))]">Max single expense</label>
