@@ -64,23 +64,12 @@ export default function LoginPage() {
           <div className="space-y-4">
             <button
               type="button"
-              onClick={() => void login("organization")}
+              onClick={() => void login()}
               className="btn-primary w-full"
             >
-              {authMode === "dev-local" ? "Use local developer profile" : "Continue with Work or Guest Account"}
+              {authMode === "dev-local" ? "Use local developer profile" : "Continue with Microsoft"}
               <ArrowRight className="h-4 w-4" />
             </button>
-
-            {authMode !== "dev-local" ? (
-              <button
-                type="button"
-                onClick={() => void login("personal")}
-                className="btn-secondary w-full"
-              >
-                Continue with Personal Microsoft Account
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            ) : null}
 
             {authMode === "dev-local" ? (
               <button
@@ -118,7 +107,7 @@ export default function LoginPage() {
             <div className="mt-2 font-medium">{authMode}</div>
             {authMode !== "dev-local" ? (
               <div className="mt-3 text-xs text-[rgb(var(--muted))]">
-                First sign-in in a real organization tenant becomes the workspace owner. Later users in that same tenant are onboarded as employees. Personal Microsoft accounts can join an organization workspace only when they sign in through that organization tenant context.
+                Real organization tenants share one workspace by tenant. Guest and external users in that tenant join the same workspace. Standalone Microsoft accounts get a private workspace of their own.
               </div>
             ) : null}
           </div>

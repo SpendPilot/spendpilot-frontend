@@ -173,9 +173,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="rounded-[30px] bg-[linear-gradient(180deg,rgba(32,95,70,1),rgba(18,72,51,1))] p-6 text-white shadow-[0_24px_48px_rgba(32,95,70,0.24)]">
               <div className="section-kicker text-white/65">Spend Control</div>
               <div className="mt-3 font-display text-[30px] tracking-tight">Finance workspace</div>
-              <p className="mt-3 text-sm leading-6 text-white/72">
-                Review spending activity, route approvals, monitor budgets, and keep the organization aligned on payment decisions.
-              </p>
             </div>
             <nav className="mt-6 space-y-2">
               {navigation.map((item) => {
