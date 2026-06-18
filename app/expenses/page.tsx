@@ -18,6 +18,7 @@ type Workspace = {
     priority: string;
     status: string;
     vendor?: { name: string } | null;
+    next_due_date?: string | null;
   }[];
   recurring_requests: {
     id: string;
@@ -77,6 +78,10 @@ export default function ExpensesPage() {
   const [requestFile, setRequestFile] = useState<File | null>(null);
   const [recurringFile, setRecurringFile] = useState<File | null>(null);
 
+  const isOwner = profile?.effective_role === "org_owner";
+  const isDeptHead = profile?.effective_role === "dept_head";
+  const isEmployee = !isOwner && !isDeptHead;
+
   function load() {
     if (!token) return;
     setLoading(true);
@@ -97,20 +102,7 @@ export default function ExpensesPage() {
 
   useEffect(() => {
     if (!token) return;
-    setLoading(true);
-    Promise.all([
-      apiFetch<Workspace>("/api/finance/expenses", { token }),
-      apiFetch<Category[]>("/api/finance/categories", { token }).catch(() => []),
-    ])
-      .then(([nextWorkspace, nextCategories]) => {
-        setWorkspace(nextWorkspace);
-        setCategories(nextCategories);
-        if (nextCategories[0]) {
-          setEmployeeForm((current) => (current.category_id ? current : { ...current, category_id: nextCategories[0].id }));
-        }
-      })
-      .catch((err) => setError(getApiError(err)))
-      .finally(() => setLoading(false));
+    load();
   }, [token]);
 
   async function submitEmployeeExpense(event: React.FormEvent<HTMLFormElement>) {
@@ -183,24 +175,6 @@ export default function ExpensesPage() {
     }
   }
 
-  async function actOnVariable(id: string, action: "forward" | "approve" | "reject") {
-    if (!token) return;
-    setSaving(true);
-    setError(null);
-    try {
-      await apiFetch(`/api/finance/expenses/${id}/${action}`, {
-        method: "POST",
-        token,
-        body: JSON.stringify({ comment: `${action} from workspace` }),
-      });
-      load();
-    } catch (nextError) {
-      setError(getApiError(nextError));
-    } finally {
-      setSaving(false);
-    }
-  }
-
   async function actOnRecurringRequest(id: string, approved: boolean) {
     if (!token) return;
     setSaving(true);
@@ -210,6 +184,26 @@ export default function ExpensesPage() {
         method: "POST",
         token,
         body: JSON.stringify({ approved }),
+      });
+      load();
+    } catch (nextError) {
+      setError(getApiError(nextError));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function cancelRecurringExpense(id: string, name: string) {
+    if (!token) return;
+    const confirmed = window.confirm(`Cancel recurring expense "${name}"? This will stop it from staying active.`);
+    if (!confirmed) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await apiFetch(`/api/finance/recurring-expenses/${id}/cancel`, {
+        method: "POST",
+        token,
+        body: JSON.stringify({ comment: `Cancelled recurring expense ${name}` }),
       });
       load();
     } catch (nextError) {
@@ -243,21 +237,15 @@ export default function ExpensesPage() {
     );
   }
 
-  const isOwner = profile?.effective_role === "org_owner";
-  const isDeptHead = profile?.effective_role === "dept_head";
-  const title = isOwner ? "Expenses" : isDeptHead ? "Expense Upload & Review" : "Upload Variable Expense";
-  const description = isOwner
-    ? "Company recurring expenses, recurring requests, and variable expenses in one place."
-    : isDeptHead
-      ? "Review employee requests and submit recurring expense requests for your department."
-      : "Submit a variable expense bill to your department head and track the approval lifecycle.";
+  if (isOwner) {
+    return (
+      <AppShell>
+        <div className="space-y-6">
+          <PageHeader
+            title="Recurring Expenses"
+            description="Manage active recurring company spend here. Variable expense reviews stay in the dedicated approvals workspace."
+          />
 
-  return (
-    <AppShell>
-      <div className="space-y-6">
-        <PageHeader title={title} description={description} />
-
-        {isOwner ? (
           <div className="panel p-6">
             <div className="font-display text-2xl">Create recurring expense</div>
             <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={submitRecurringExpense}>
@@ -281,11 +269,85 @@ export default function ExpensesPage() {
               </button>
             </form>
           </div>
-        ) : null}
 
-        {isDeptHead ? (
+          <div className="grid gap-6 xl:grid-cols-2">
+            <section className="space-y-4">
+              <div className="font-display text-2xl">Active and past recurring expenses</div>
+              {workspace.recurring_expenses.map((item) => (
+                <div key={item.id} className="panel p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium">{item.name}</div>
+                      <div className="mt-1 text-sm text-slate-500">
+                        {item.vendor?.name || "Vendor pending"} - {item.billing_cycle}
+                      </div>
+                      <div className="mt-2 text-sm text-slate-500">
+                        {item.currency} {Number(item.amount).toFixed(2)} - {item.priority} {item.next_due_date ? `- due ${new Date(item.next_due_date).toLocaleDateString()}` : ""}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-3">
+                      <div className="text-right text-sm uppercase tracking-[0.2em] text-slate-500">{item.status}</div>
+                      {item.status === "active" ? (
+                        <button className="rounded-2xl border border-rose-300 px-4 py-2 text-sm text-rose-700" disabled={saving} onClick={() => void cancelRecurringExpense(item.id, item.name)}>
+                          Cancel recurring expense
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {!workspace.recurring_expenses.length ? (
+                <EmptyState title="No recurring expenses yet" description="Create the first recurring expense to start the owner-managed schedule." />
+              ) : null}
+            </section>
+
+            <section className="space-y-4">
+              <div className="font-display text-2xl">Recurring expense requests</div>
+              {workspace.recurring_requests.map((item) => (
+                <div key={item.id} className="panel p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-medium">{item.name}</div>
+                      <div className="mt-1 text-sm text-slate-500">{item.vendor_name} - {item.category}</div>
+                    </div>
+                    <div className="text-right text-sm uppercase tracking-[0.2em] text-slate-500">{item.status}</div>
+                  </div>
+                  <div className="mt-3 text-sm">
+                    {item.currency} {Number(item.estimated_amount).toFixed(2)}
+                  </div>
+                  {item.status === "pending" ? (
+                    <div className="mt-4 flex gap-3">
+                      <button className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm text-white" onClick={() => void actOnRecurringRequest(item.id, true)}>
+                        Approve
+                      </button>
+                      <button className="rounded-2xl border border-rose-300 px-4 py-2 text-sm text-rose-700" onClick={() => void actOnRecurringRequest(item.id, false)}>
+                        Reject
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+              {!workspace.recurring_requests.length ? (
+                <EmptyState title="No recurring requests waiting" description="Department recurring requests will appear here for owner decision." />
+              ) : null}
+            </section>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (isDeptHead) {
+    return (
+      <AppShell>
+        <div className="space-y-6">
+          <PageHeader
+            title="Recurring Requests"
+            description="Create recurring spend requests for your department here. Variable expense reviews live in the dedicated approvals workspace."
+          />
+
           <div className="panel p-6">
-            <div className="font-display text-2xl">Recurring expense request</div>
+            <div className="font-display text-2xl">Create recurring request</div>
             <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={submitRecurringRequest}>
               <input className="rounded-2xl border px-4 py-3" placeholder="Name" value={requestForm.name} onChange={(e) => setRequestForm({ ...requestForm, name: e.target.value })} />
               <input className="rounded-2xl border px-4 py-3" placeholder="Vendor" value={requestForm.vendor_name} onChange={(e) => setRequestForm({ ...requestForm, vendor_name: e.target.value })} />
@@ -303,127 +365,87 @@ export default function ExpensesPage() {
               </button>
             </form>
           </div>
-        ) : null}
 
-        {!isOwner && !isDeptHead ? (
-          <div className="panel p-6">
-            <div className="font-display text-2xl">Submit variable expense</div>
-            <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={submitEmployeeExpense}>
-              <input className="rounded-2xl border px-4 py-3" placeholder="Title" value={employeeForm.title} onChange={(e) => setEmployeeForm({ ...employeeForm, title: e.target.value })} />
-              <input className="rounded-2xl border px-4 py-3" placeholder="Vendor" value={employeeForm.vendor_name} onChange={(e) => setEmployeeForm({ ...employeeForm, vendor_name: e.target.value })} />
-              <input className="rounded-2xl border px-4 py-3" placeholder="Amount" value={employeeForm.amount} onChange={(e) => setEmployeeForm({ ...employeeForm, amount: e.target.value })} />
-              <input className="rounded-2xl border px-4 py-3" type="date" value={employeeForm.expense_date} onChange={(e) => setEmployeeForm({ ...employeeForm, expense_date: e.target.value })} />
-              <select className="rounded-2xl border px-4 py-3" value={employeeForm.category_id} onChange={(e) => setEmployeeForm({ ...employeeForm, category_id: e.target.value })}>
-                {categories.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-              <input className="rounded-2xl border px-4 py-3" placeholder="Reason" value={employeeForm.description} onChange={(e) => setEmployeeForm({ ...employeeForm, description: e.target.value })} />
-              <input className="rounded-2xl border px-4 py-3 md:col-span-2" type="file" accept=".pdf,image/*" onChange={(e) => setEmployeeFile(e.target.files?.[0] || null)} />
-              <button className="rounded-2xl bg-slate-950 px-4 py-3 text-white md:col-span-2" disabled={saving}>
-                {saving ? "Saving..." : "Submit to department head"}
-              </button>
-            </form>
-          </div>
-        ) : null}
-
-        <div className="grid gap-6 xl:grid-cols-2">
-          <div className="space-y-4">
-            <div className="font-display text-2xl">{isOwner ? "Recurring expenses" : "Recurring requests"}</div>
-            {isOwner
-              ? workspace.recurring_expenses.map((item) => (
-                  <div key={item.id} className="panel p-5">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="font-medium">{item.name}</div>
-                        <div className="mt-1 text-sm text-slate-500">{item.vendor?.name || "Vendor pending"} • {item.billing_cycle}</div>
-                      </div>
-                      <div className="text-right text-sm uppercase tracking-[0.2em] text-slate-500">{item.status}</div>
-                    </div>
-                    <div className="mt-3 text-sm">{item.currency} {Number(item.amount).toFixed(2)} • {item.priority}</div>
-                  </div>
-                ))
-              : workspace.recurring_requests.map((item) => (
-                  <div key={item.id} className="panel p-5">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="font-medium">{item.name}</div>
-                        <div className="mt-1 text-sm text-slate-500">{item.vendor_name} • {item.category}</div>
-                      </div>
-                      <div className="text-right text-sm uppercase tracking-[0.2em] text-slate-500">{item.status}</div>
-                    </div>
-                    {isOwner && item.status === "pending" ? (
-                      <div className="mt-4 flex gap-3">
-                        <button className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm text-white" onClick={() => void actOnRecurringRequest(item.id, true)}>Approve</button>
-                        <button className="rounded-2xl border border-rose-300 px-4 py-2 text-sm text-rose-700" onClick={() => void actOnRecurringRequest(item.id, false)}>Reject</button>
-                      </div>
-                    ) : null}
-                  </div>
-                ))}
-            {!workspace.recurring_expenses.length && !workspace.recurring_requests.length ? (
-              <EmptyState title="Nothing here yet" description="This section will populate as recurring spend workflows are used." />
-            ) : null}
-            {isOwner && workspace.recurring_requests.length ? (
-              <div className="space-y-4 pt-4">
-                <div className="font-display text-2xl">Recurring expense requests</div>
-                {workspace.recurring_requests.map((item) => (
-                  <div key={item.id} className="panel p-5">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="font-medium">{item.name}</div>
-                        <div className="mt-1 text-sm text-slate-500">{item.vendor_name} - {item.category}</div>
-                      </div>
-                      <div className="text-right text-sm uppercase tracking-[0.2em] text-slate-500">{item.status}</div>
-                    </div>
-                    <div className="mt-3 text-sm">{item.currency} {Number(item.estimated_amount).toFixed(2)}</div>
-                    {item.status === "pending" ? (
-                      <div className="mt-4 flex gap-3">
-                        <button className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm text-white" onClick={() => void actOnRecurringRequest(item.id, true)}>Approve</button>
-                        <button className="rounded-2xl border border-rose-300 px-4 py-2 text-sm text-rose-700" onClick={() => void actOnRecurringRequest(item.id, false)}>Reject</button>
-                      </div>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
-          <div className="space-y-4">
-            <div className="font-display text-2xl">Variable expenses</div>
-            {workspace.variable_expenses.map((item) => (
+          <section className="space-y-4">
+            <div className="font-display text-2xl">Recurring request history</div>
+            {workspace.recurring_requests.map((item) => (
               <div key={item.id} className="panel p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="font-medium">{item.title}</div>
-                    <div className="mt-1 text-sm text-slate-500">{item.vendor_name || "Vendor pending"} • {new Date(item.expense_date).toLocaleDateString()}</div>
+                    <div className="font-medium">{item.name}</div>
+                    <div className="mt-1 text-sm text-slate-500">{item.vendor_name} - {item.category}</div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-medium">{item.currency} {Number(item.amount).toFixed(2)}</div>
-                    <div className="mt-1 text-sm uppercase tracking-[0.2em] text-slate-500">{item.status}</div>
-                  </div>
+                  <div className="text-right text-sm uppercase tracking-[0.2em] text-slate-500">{item.status}</div>
                 </div>
-                {item.rejection_reason ? <div className="mt-3 text-sm text-rose-700 dark:text-rose-200">Reason: {item.rejection_reason}</div> : null}
-                {isDeptHead && item.status === "pending_dept_head" ? (
-                  <div className="mt-4 flex gap-3">
-                    <button className="rounded-2xl bg-sky-600 px-4 py-2 text-sm text-white" onClick={() => void actOnVariable(item.id, "forward")}>Forward to org owner</button>
-                    <button className="rounded-2xl border border-rose-300 px-4 py-2 text-sm text-rose-700" onClick={() => void actOnVariable(item.id, "reject")}>Reject</button>
-                  </div>
-                ) : null}
-                {isOwner && item.status === "forwarded_to_org_owner" ? (
-                  <div className="mt-4 flex gap-3">
-                    <button className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm text-white" onClick={() => void actOnVariable(item.id, "approve")}>Approve</button>
-                    <button className="rounded-2xl border border-rose-300 px-4 py-2 text-sm text-rose-700" onClick={() => void actOnVariable(item.id, "reject")}>Reject</button>
-                  </div>
-                ) : null}
+                <div className="mt-3 text-sm">
+                  {item.currency} {Number(item.estimated_amount).toFixed(2)}
+                </div>
               </div>
             ))}
-            {!workspace.variable_expenses.length ? (
-              <EmptyState title="No variable expenses yet" description="Submitted employee and department requests will appear here." />
+            {!workspace.recurring_requests.length ? (
+              <EmptyState title="No recurring requests yet" description="Your submitted recurring requests will appear here after you send them." />
             ) : null}
-          </div>
+          </section>
         </div>
+      </AppShell>
+    );
+  }
+
+  return (
+    <AppShell>
+      <div className="space-y-6">
+        <PageHeader
+          title="Variable Expense Tracking"
+          description="Submit one-off expenses here and follow their approval status. Recurring expenses are hidden from the employee workflow."
+        />
+
+        <div className="panel p-6">
+          <div className="font-display text-2xl">Submit variable expense</div>
+          <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={submitEmployeeExpense}>
+            <input className="rounded-2xl border px-4 py-3" placeholder="Title" value={employeeForm.title} onChange={(e) => setEmployeeForm({ ...employeeForm, title: e.target.value })} />
+            <input className="rounded-2xl border px-4 py-3" placeholder="Vendor" value={employeeForm.vendor_name} onChange={(e) => setEmployeeForm({ ...employeeForm, vendor_name: e.target.value })} />
+            <input className="rounded-2xl border px-4 py-3" placeholder="Amount" value={employeeForm.amount} onChange={(e) => setEmployeeForm({ ...employeeForm, amount: e.target.value })} />
+            <input className="rounded-2xl border px-4 py-3" type="date" value={employeeForm.expense_date} onChange={(e) => setEmployeeForm({ ...employeeForm, expense_date: e.target.value })} />
+            <select className="rounded-2xl border px-4 py-3" value={employeeForm.category_id} onChange={(e) => setEmployeeForm({ ...employeeForm, category_id: e.target.value })}>
+              {categories.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+            <input className="rounded-2xl border px-4 py-3" placeholder="Reason" value={employeeForm.description} onChange={(e) => setEmployeeForm({ ...employeeForm, description: e.target.value })} />
+            <input className="rounded-2xl border px-4 py-3 md:col-span-2" type="file" accept=".pdf,image/*" onChange={(e) => setEmployeeFile(e.target.files?.[0] || null)} />
+            <button className="rounded-2xl bg-slate-950 px-4 py-3 text-white md:col-span-2" disabled={saving}>
+              {saving ? "Saving..." : "Submit expense"}
+            </button>
+          </form>
+        </div>
+
+        <section className="space-y-4">
+          <div className="font-display text-2xl">Your submitted expenses</div>
+          {workspace.variable_expenses.map((item) => (
+            <div key={item.id} className="panel p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="font-medium">{item.title}</div>
+                  <div className="mt-1 text-sm text-slate-500">
+                    {item.vendor_name || "Vendor pending"} - {new Date(item.expense_date).toLocaleDateString()}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-medium">
+                    {item.currency} {Number(item.amount).toFixed(2)}
+                  </div>
+                  <div className="mt-1 text-sm uppercase tracking-[0.2em] text-slate-500">{item.status}</div>
+                </div>
+              </div>
+              {item.rejection_reason ? <div className="mt-3 text-sm text-rose-700 dark:text-rose-200">Reason: {item.rejection_reason}</div> : null}
+            </div>
+          ))}
+          {!workspace.variable_expenses.length ? (
+            <EmptyState title="No submitted expenses yet" description="Your expense history will appear here once you start uploading bills." />
+          ) : null}
+        </section>
       </div>
     </AppShell>
   );

@@ -74,7 +74,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     profile.effective_role === "org_owner"
       ? [
           { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-          { href: "/expenses", label: "Expenses", icon: ReceiptText },
+          { href: "/expenses", label: "Recurring Expenses", icon: ReceiptText },
+          { href: "/approvals", label: "Expense Reviews", icon: ShieldAlert },
           { href: "/spend-limits", label: "Spend Limits", icon: SlidersHorizontal },
           { href: "/payment-priority", label: "Payment Priority", icon: ShieldAlert },
           { href: "/ai-insights", label: "AI Insights", icon: Bot },
@@ -86,12 +87,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       : profile.effective_role === "dept_head"
         ? [
             { href: "/dashboard", label: "Department Dashboard", icon: LayoutDashboard },
-            { href: "/expenses", label: "Expense Upload & Review", icon: ReceiptText },
+            { href: "/expenses", label: "Recurring Requests", icon: ReceiptText },
+            { href: "/approvals", label: "Expense Reviews", icon: ShieldAlert },
             { href: "/profile", label: "Department Profile", icon: Settings2 },
           ]
         : [
             { href: "/dashboard", label: "Department Budget", icon: LayoutDashboard },
-            { href: "/expenses", label: "Upload Variable Expense", icon: ReceiptText },
+            { href: "/expenses", label: "Variable Expense Tracking", icon: ReceiptText },
             { href: "/profile", label: "Profile", icon: Settings2 },
           ];
 
