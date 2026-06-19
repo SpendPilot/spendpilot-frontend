@@ -1,0 +1,60 @@
+name: Frontend PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Lint, Build, and Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run typecheck
+        run: npm run typecheck --if-present
+
+      - name: Run tests
+        run: npm run test --if-present
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@v8.2.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          projectBaseDir: .
+          args: >
+            "-Dsonar.projectKey=SpendPilot_spendpilot-frontend"
+            "-Dsonar.projectName=spendpilot-frontend"
+
+      - name: Set up Snyk CLI
+        uses: snyk/actions/setup@master
+
+      - name: Run Snyk scan
+        run: snyk test --all-projects --detection-depth=2
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
