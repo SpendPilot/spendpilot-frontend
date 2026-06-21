@@ -60,6 +60,7 @@ export default function AIInsightsPage() {
   const [error, setError] = useState<string | null>(null);
   const [pendingMessages, setPendingMessages] = useState<PendingMessage[]>([]);
   const [composerHint, setComposerHint] = useState("Ask about budgets, approvals, spend trends, urgent payments, or documents.");
+  const [composerExpanded, setComposerExpanded] = useState(false);
   const transcriptRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -99,6 +100,14 @@ export default function AIInsightsPage() {
     textareaRef.current?.focus();
   }, [selectedSessionId, sending]);
 
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "0px";
+    const nextHeight = Math.min(textarea.scrollHeight, composerExpanded ? 220 : 120);
+    textarea.style.height = `${Math.max(nextHeight, composerExpanded ? 96 : 44)}px`;
+  }, [message, composerExpanded]);
+
   async function ask(event?: React.FormEvent<HTMLFormElement>) {
     event?.preventDefault();
     const nextMessage = message.trim();
@@ -131,6 +140,7 @@ export default function AIInsightsPage() {
   function handlePrompt(prompt: string) {
     setMessage(prompt);
     setComposerHint("Press Enter to send. Use Shift+Enter for a new line.");
+    setComposerExpanded(true);
     textareaRef.current?.focus();
   }
 
@@ -139,6 +149,7 @@ export default function AIInsightsPage() {
     setPendingMessages([]);
     setMessage("");
     setError(null);
+    setComposerExpanded(false);
     setComposerHint("Start a fresh conversation. The first message will create a new session.");
     textareaRef.current?.focus();
   }
@@ -165,12 +176,12 @@ export default function AIInsightsPage() {
           }
         />
         <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="panel flex h-[calc(100vh-12.5rem)] flex-col overflow-hidden">
+          <aside className="panel flex h-[calc(100vh-12.5rem)] flex-col overflow-hidden bg-[linear-gradient(180deg,rgba(var(--panel),0.98),rgba(var(--primary-soft),0.44))]">
             <div className="border-b border-[rgba(var(--line),0.84)] px-4 py-4">
               <button
                 type="button"
                 onClick={handleNewChat}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[rgb(var(--ink))] px-4 py-3 text-sm font-medium text-white transition hover:opacity-95"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[rgb(var(--primary))] px-4 py-3 text-sm font-medium text-white shadow-[0_14px_30px_rgba(var(--primary),0.24)] transition hover:bg-[rgb(var(--primary-strong))]"
               >
                 <MessageSquarePlus className="h-4 w-4" />
                 New chat
@@ -195,8 +206,8 @@ export default function AIInsightsPage() {
                       }}
                       className={`w-full rounded-[24px] border px-4 py-3 text-left transition ${
                         active
-                          ? "border-[rgba(var(--ink),0.95)] bg-[rgb(var(--ink))] text-white shadow-lg"
-                          : "border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel-muted),0.45)] text-[rgb(var(--foreground))] hover:bg-[rgba(var(--panel-muted),0.82)]"
+                          ? "border-[rgba(var(--primary),0.95)] bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--primary-strong),0.94))] text-white shadow-[0_16px_30px_rgba(var(--primary),0.24)]"
+                          : "border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel),0.72)] text-[rgb(var(--foreground))] hover:border-[rgba(var(--primary),0.26)] hover:bg-[rgba(var(--panel),0.96)]"
                       }`}
                     >
                       <div className="truncate text-sm font-semibold">{session.title}</div>
@@ -209,8 +220,8 @@ export default function AIInsightsPage() {
               )}
             </div>
             <div className="border-t border-[rgba(var(--line),0.84)] px-4 py-4">
-              <div className="rounded-[24px] bg-[rgba(var(--panel-muted),0.6)] px-4 py-4 text-sm text-[rgb(var(--muted-strong))]">
-                <div className="flex items-center gap-2 font-medium text-[rgb(var(--foreground))]">
+              <div className="rounded-[24px] border border-[rgba(var(--primary),0.14)] bg-[linear-gradient(135deg,rgba(var(--primary-soft),0.92),rgba(var(--accent-soft),0.72))] px-4 py-4 text-sm text-[rgb(var(--muted-strong))]">
+                <div className="flex items-center gap-2 font-medium text-[rgb(var(--primary-strong))]">
                   <Sparkles className="h-4 w-4" />
                   Grounded responses
                 </div>
@@ -219,7 +230,7 @@ export default function AIInsightsPage() {
             </div>
           </aside>
 
-          <section className="panel flex h-[calc(100vh-12.5rem)] flex-col overflow-hidden">
+          <section className="panel flex h-[calc(100vh-12.5rem)] flex-col overflow-hidden bg-[linear-gradient(180deg,rgba(var(--panel),0.98),rgba(var(--panel-strong),0.98))]">
             <div className="border-b border-[rgba(var(--line),0.84)] px-5 py-4 sm:px-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -230,7 +241,7 @@ export default function AIInsightsPage() {
                     Ask naturally. The assistant should feel conversational while staying finance-grounded.
                   </div>
                 </div>
-                <div className="rounded-full bg-[rgba(var(--panel-muted),0.72)] px-3 py-1 text-xs font-medium text-[rgb(var(--muted-strong))]">
+                <div className="rounded-full border border-[rgba(var(--primary),0.18)] bg-[rgba(var(--primary-soft),0.86)] px-3 py-1 text-xs font-medium text-[rgb(var(--primary-strong))]">
                   {sending ? "Responding..." : "Ready"}
                 </div>
               </div>
@@ -238,11 +249,11 @@ export default function AIInsightsPage() {
 
             <div
               ref={transcriptRef}
-              className="flex-1 overflow-y-auto bg-[linear-gradient(180deg,rgba(var(--panel-muted),0.3),rgba(var(--panel),0.1))] px-4 py-6 sm:px-6"
+              className="flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(var(--primary),0.12),transparent_34%),linear-gradient(180deg,rgba(var(--panel-muted),0.36),rgba(var(--panel),0.08))] px-4 py-6 sm:px-6"
             >
               {renderedMessages.length === 0 ? (
                 <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 py-12 text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[rgb(var(--ink))] text-white shadow-lg">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--accent),0.95))] text-white shadow-[0_18px_40px_rgba(var(--primary),0.22)]">
                     <Sparkles className="h-6 w-6" />
                   </div>
                   <div>
@@ -258,7 +269,7 @@ export default function AIInsightsPage() {
                         key={prompt}
                         type="button"
                         onClick={() => handlePrompt(prompt)}
-                        className="rounded-[24px] border border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel),0.92)] px-4 py-4 text-left text-sm text-[rgb(var(--foreground))] transition hover:-translate-y-0.5 hover:bg-[rgba(var(--panel),1)]"
+                        className="rounded-[24px] border border-[rgba(var(--line),0.84)] bg-[linear-gradient(180deg,rgba(var(--panel),0.98),rgba(var(--accent-soft),0.34))] px-4 py-4 text-left text-sm text-[rgb(var(--foreground))] transition hover:-translate-y-0.5 hover:border-[rgba(var(--accent),0.34)] hover:shadow-[0_14px_30px_rgba(var(--accent),0.12)]"
                       >
                         {prompt}
                       </button>
@@ -272,7 +283,7 @@ export default function AIInsightsPage() {
                     return (
                       <div key={item.id} className={`flex gap-4 ${assistant ? "items-start" : "justify-end"}`}>
                         {assistant ? (
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[rgb(var(--ink))] text-white shadow-md">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--accent),0.92))] text-white shadow-[0_10px_24px_rgba(var(--primary),0.22)]">
                             <Bot className="h-5 w-5" />
                           </div>
                         ) : null}
@@ -284,8 +295,8 @@ export default function AIInsightsPage() {
                           <div
                             className={`rounded-[28px] px-5 py-4 text-sm leading-7 shadow-sm ${
                               assistant
-                                ? "border border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel),0.98)] text-[rgb(var(--foreground))]"
-                                : "bg-[rgb(var(--ink))] text-white"
+                                ? "border border-[rgba(var(--line),0.84)] bg-[linear-gradient(180deg,rgba(var(--panel),0.99),rgba(var(--primary-soft),0.3))] text-[rgb(var(--foreground))] shadow-[0_10px_28px_rgba(var(--shadow-color),0.08)]"
+                                : "bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--primary-strong),0.96))] text-white shadow-[0_16px_34px_rgba(var(--primary),0.24)]"
                             }`}
                           >
                             <div className="whitespace-pre-wrap">{item.content}</div>
@@ -294,7 +305,7 @@ export default function AIInsightsPage() {
                                 {item.sources.map((source, index) => (
                                   <span
                                     key={`${item.id}-${source.label}-${index}`}
-                                    className="rounded-full border border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel-muted),0.65)] px-2.5 py-1 text-[11px] font-medium text-[rgb(var(--muted-strong))]"
+                                    className="rounded-full border border-[rgba(var(--accent),0.18)] bg-[rgba(var(--accent-soft),0.72)] px-2.5 py-1 text-[11px] font-medium text-[rgb(var(--muted-strong))]"
                                   >
                                     {source.label}
                                   </span>
@@ -304,19 +315,19 @@ export default function AIInsightsPage() {
                             {"grounded_context" in item && item.grounded_context ? (
                               <div className="mt-4 flex flex-wrap gap-2 text-xs text-[rgb(var(--muted-strong))]">
                                 {item.grounded_context.confidence ? (
-                                  <span className="rounded-full bg-[rgba(var(--panel-muted),0.72)] px-2.5 py-1">
+                                  <span className="rounded-full bg-[rgba(var(--primary-soft),0.92)] px-2.5 py-1 text-[rgb(var(--primary-strong))]">
                                     Confidence: {item.grounded_context.confidence}
                                   </span>
                                 ) : null}
                                 {item.grounded_context.fallback_used ? (
-                                  <span className="rounded-full bg-[rgba(var(--panel-muted),0.72)] px-2.5 py-1">Fallback response</span>
+                                  <span className="rounded-full bg-[rgba(var(--accent-soft),0.84)] px-2.5 py-1 text-[rgb(var(--muted-strong))]">Fallback response</span>
                                 ) : null}
                               </div>
                             ) : null}
                           </div>
                         </div>
                         {!assistant ? (
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[rgba(var(--panel-muted),0.84)] text-[rgb(var(--foreground))] shadow-sm">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel),0.92)] text-[rgb(var(--foreground))] shadow-sm">
                             <User2 className="h-5 w-5" />
                           </div>
                         ) : null}
@@ -341,7 +352,7 @@ export default function AIInsightsPage() {
                       key={prompt}
                       type="button"
                       onClick={() => handlePrompt(prompt)}
-                      className="rounded-full border border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel-muted),0.55)] px-3 py-2 text-sm text-[rgb(var(--foreground))] transition hover:bg-[rgba(var(--panel-muted),0.82)]"
+                      className="rounded-full border border-[rgba(var(--primary),0.16)] bg-[rgba(var(--primary-soft),0.72)] px-3 py-2 text-sm text-[rgb(var(--primary-strong))] transition hover:bg-[rgba(var(--primary-soft),0.96)]"
                     >
                       {prompt}
                     </button>
@@ -350,12 +361,24 @@ export default function AIInsightsPage() {
               ) : null}
 
               <form onSubmit={ask} className="mx-auto max-w-4xl">
-                <div className="rounded-[30px] border border-[rgba(var(--line),0.9)] bg-[rgba(var(--panel),0.98)] p-3 shadow-lg">
+                <div
+                  className={`rounded-[30px] border p-3 transition-all duration-200 ${
+                    composerExpanded || message
+                      ? "border-[rgba(var(--primary),0.26)] bg-[linear-gradient(180deg,rgba(var(--panel),0.99),rgba(var(--primary-soft),0.34))] shadow-[0_18px_40px_rgba(var(--primary),0.12)]"
+                      : "border-[rgba(var(--line),0.9)] bg-[rgba(var(--panel),0.98)] shadow-lg"
+                  }`}
+                >
                   <textarea
                     ref={textareaRef}
-                    className="min-h-[88px] w-full resize-none bg-transparent px-3 py-2 text-sm leading-7 text-[rgb(var(--foreground))] outline-none placeholder:text-[rgb(var(--muted-strong))]"
+                    className={`w-full resize-none overflow-y-auto bg-transparent px-3 text-sm leading-7 text-[rgb(var(--foreground))] outline-none placeholder:text-[rgb(var(--muted-strong))] ${
+                      composerExpanded || message ? "py-2" : "py-1.5"
+                    }`}
                     value={message}
                     onChange={(event) => setMessage(event.target.value)}
+                    onFocus={() => setComposerExpanded(true)}
+                    onBlur={() => {
+                      if (!message.trim()) setComposerExpanded(false);
+                    }}
                     onKeyDown={handleTextareaKeyDown}
                     placeholder="Message SpendPilot AI about cash flow, approvals, budgets, documents, or payment priorities..."
                   />
@@ -370,14 +393,14 @@ export default function AIInsightsPage() {
                       <button
                         type="button"
                         onClick={() => handlePrompt(EXAMPLE_PROMPTS[0])}
-                        className="rounded-full border border-[rgba(var(--line),0.84)] px-3 py-2 text-xs font-medium text-[rgb(var(--muted-strong))] transition hover:bg-[rgba(var(--panel-muted),0.72)]"
+                        className="rounded-full border border-[rgba(var(--accent),0.18)] bg-[rgba(var(--accent-soft),0.56)] px-3 py-2 text-xs font-medium text-[rgb(var(--muted-strong))] transition hover:bg-[rgba(var(--accent-soft),0.86)]"
                       >
                         Use example
                       </button>
                       <button
                         type="submit"
                         disabled={sending || !message.trim()}
-                        className="flex h-11 w-11 items-center justify-center rounded-full bg-[rgb(var(--ink))] text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45"
+                        className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--accent),0.94))] text-white shadow-[0_12px_28px_rgba(var(--primary),0.2)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-45"
                         aria-label={sending ? "Sending message" : "Send message"}
                       >
                         <ArrowUp className="h-5 w-5" />
