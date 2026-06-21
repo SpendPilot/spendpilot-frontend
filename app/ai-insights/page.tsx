@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUp, Bot, MessageSquarePlus, Sparkles, User2 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
-import { ErrorState, LoadingState, PageHeader } from "@/components/ui";
+import { ErrorState, LoadingState } from "@/components/ui";
 import { useAuth } from "@/components/auth-provider";
 import { apiFetch, getApiError } from "@/lib/api";
 
@@ -167,7 +167,7 @@ export default function AIInsightsPage() {
   return (
     <AppShell>
       <div className="space-y-3">
-        <div className="rounded-[24px] border border-[rgba(var(--line),0.72)] bg-[rgba(var(--panel),0.82)] px-4 py-3 text-sm text-[rgb(var(--muted-strong))] shadow-sm">
+        <div className="rounded-[22px] border border-[rgba(var(--line),0.68)] bg-[rgba(var(--panel),0.72)] px-4 py-3 text-sm text-[rgb(var(--muted-strong))] shadow-sm">
           <div className="flex items-center justify-between gap-3">
             <div>
               <div className="text-base font-semibold text-[rgb(var(--foreground))]">AI Insights</div>
@@ -183,7 +183,7 @@ export default function AIInsightsPage() {
           </div>
         </div>
         <div className="grid gap-3 lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[252px_minmax(0,1fr)]">
-          <aside className="panel flex overflow-hidden bg-[linear-gradient(180deg,rgba(var(--panel),0.98),rgba(var(--primary-soft),0.38))] lg:h-[calc(100vh-10rem)] lg:flex-col">
+          <aside className="panel flex overflow-hidden bg-[rgba(var(--panel),0.92)] lg:h-[calc(100vh-10rem)] lg:flex-col">
             <div className="border-b border-[rgba(var(--line),0.84)] px-3 py-3">
               <button
                 type="button"
@@ -214,7 +214,7 @@ export default function AIInsightsPage() {
                         }}
                         className={`min-w-[200px] rounded-[20px] border px-3 py-2.5 text-left transition lg:min-w-0 ${
                           active
-                            ? "border-[rgba(var(--primary),0.95)] bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--primary-strong),0.94))] text-white shadow-[0_12px_22px_rgba(var(--primary),0.2)]"
+                            ? "border-[rgba(var(--primary),0.95)] bg-[rgb(var(--primary))] text-white shadow-[0_10px_18px_rgba(var(--primary),0.16)]"
                             : "border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel),0.72)] text-[rgb(var(--foreground))] hover:border-[rgba(var(--primary),0.26)] hover:bg-[rgba(var(--panel),0.96)]"
                         }`}
                       >
@@ -229,7 +229,7 @@ export default function AIInsightsPage() {
               )}
             </div>
             <div className="hidden border-t border-[rgba(var(--line),0.84)] px-3 py-3 lg:block">
-              <div className="rounded-[20px] border border-[rgba(var(--primary),0.14)] bg-[linear-gradient(135deg,rgba(var(--primary-soft),0.92),rgba(var(--accent-soft),0.72))] px-3 py-3 text-xs text-[rgb(var(--muted-strong))]">
+              <div className="rounded-[20px] border border-[rgba(var(--primary),0.12)] bg-[rgba(var(--primary-soft),0.82)] px-3 py-3 text-xs text-[rgb(var(--muted-strong))]">
                 <div className="flex items-center gap-2 font-medium text-[rgb(var(--primary-strong))]">
                   <Sparkles className="h-4 w-4" />
                   Grounded responses
@@ -239,7 +239,7 @@ export default function AIInsightsPage() {
             </div>
           </aside>
 
-          <section className="panel flex min-h-[74vh] flex-col overflow-hidden bg-[linear-gradient(180deg,rgba(var(--panel),0.98),rgba(var(--panel-strong),0.98))] lg:h-[calc(100vh-10rem)] lg:min-h-0">
+          <section className="panel flex min-h-[74vh] flex-col overflow-hidden bg-[rgba(var(--panel),0.96)] lg:h-[calc(100vh-10rem)] lg:min-h-0">
             <div className="border-b border-[rgba(var(--line),0.84)] px-4 py-3 sm:px-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -258,11 +258,11 @@ export default function AIInsightsPage() {
 
             <div
               ref={transcriptRef}
-              className="flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(var(--primary),0.12),transparent_34%),linear-gradient(180deg,rgba(var(--panel-muted),0.36),rgba(var(--panel),0.08))] px-3 py-4 sm:px-4 lg:px-5"
+              className="flex-1 overflow-y-auto bg-[rgba(var(--panel-muted),0.28)] px-3 py-4 sm:px-4 lg:px-5"
             >
               {renderedMessages.length === 0 ? (
                 <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-4 py-10 text-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--accent),0.95))] text-white shadow-[0_14px_30px_rgba(var(--primary),0.2)]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgb(var(--primary))] text-white shadow-[0_12px_20px_rgba(var(--primary),0.16)]">
                     <Sparkles className="h-5 w-5" />
                   </div>
                   <div>
@@ -278,7 +278,7 @@ export default function AIInsightsPage() {
                         key={prompt}
                         type="button"
                         onClick={() => handlePrompt(prompt)}
-                        className="rounded-[20px] border border-[rgba(var(--line),0.84)] bg-[linear-gradient(180deg,rgba(var(--panel),0.98),rgba(var(--accent-soft),0.34))] px-4 py-3.5 text-left text-sm text-[rgb(var(--foreground))] transition hover:-translate-y-0.5 hover:border-[rgba(var(--accent),0.34)] hover:shadow-[0_10px_20px_rgba(var(--accent),0.1)]"
+                        className="rounded-[20px] border border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel),0.98)] px-4 py-3.5 text-left text-sm text-[rgb(var(--foreground))] transition hover:-translate-y-0.5 hover:border-[rgba(var(--primary),0.24)] hover:bg-[rgba(var(--panel),1)]"
                       >
                         {prompt}
                       </button>
@@ -292,7 +292,7 @@ export default function AIInsightsPage() {
                     return (
                       <div key={item.id} className={`flex w-full gap-2.5 ${assistant ? "items-start" : "justify-end"}`}>
                         {assistant ? (
-                          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--accent),0.92))] text-white shadow-[0_8px_18px_rgba(var(--primary),0.18)]">
+                          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[rgb(var(--primary))] text-white shadow-[0_8px_14px_rgba(var(--primary),0.14)]">
                             <Bot className="h-4 w-4" />
                           </div>
                         ) : null}
@@ -304,8 +304,8 @@ export default function AIInsightsPage() {
                           <div
                             className={`rounded-[22px] px-4 py-3 text-[13px] leading-6 shadow-sm ${
                               assistant
-                                ? "border border-[rgba(var(--line),0.84)] bg-[linear-gradient(180deg,rgba(var(--panel),0.99),rgba(var(--primary-soft),0.22))] text-[rgb(var(--foreground))] shadow-[0_8px_20px_rgba(var(--shadow-color),0.06)]"
-                                : "bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--primary-strong),0.96))] text-white shadow-[0_10px_22px_rgba(var(--primary),0.18)]"
+                                ? "border border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel),0.98)] text-[rgb(var(--foreground))] shadow-[0_6px_14px_rgba(var(--shadow-color),0.04)]"
+                                : "bg-[rgb(var(--primary))] text-white shadow-[0_8px_16px_rgba(var(--primary),0.14)]"
                             }`}
                           >
                             <div className="whitespace-pre-wrap">{item.content}</div>
@@ -314,7 +314,7 @@ export default function AIInsightsPage() {
                                 {item.sources.map((source, index) => (
                                   <span
                                     key={`${item.id}-${source.label}-${index}`}
-                                    className="rounded-full border border-[rgba(var(--accent),0.18)] bg-[rgba(var(--accent-soft),0.72)] px-2.5 py-1 text-[10px] font-medium text-[rgb(var(--muted-strong))]"
+                                    className="rounded-full border border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel-muted),0.74)] px-2.5 py-1 text-[10px] font-medium text-[rgb(var(--muted-strong))]"
                                   >
                                     {source.label}
                                   </span>
@@ -324,12 +324,12 @@ export default function AIInsightsPage() {
                             {"grounded_context" in item && item.grounded_context ? (
                               <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] text-[rgb(var(--muted-strong))]">
                                 {item.grounded_context.confidence ? (
-                                  <span className="rounded-full bg-[rgba(var(--primary-soft),0.92)] px-2.5 py-1 text-[rgb(var(--primary-strong))]">
+                                  <span className="rounded-full bg-[rgba(var(--panel-muted),0.88)] px-2.5 py-1 text-[rgb(var(--muted-strong))]">
                                     Confidence: {item.grounded_context.confidence}
                                   </span>
                                 ) : null}
                                 {item.grounded_context.fallback_used ? (
-                                  <span className="rounded-full bg-[rgba(var(--accent-soft),0.84)] px-2.5 py-1 text-[rgb(var(--muted-strong))]">Fallback response</span>
+                                  <span className="rounded-full bg-[rgba(var(--panel-muted),0.88)] px-2.5 py-1 text-[rgb(var(--muted-strong))]">Fallback response</span>
                                 ) : null}
                               </div>
                             ) : null}
@@ -361,7 +361,7 @@ export default function AIInsightsPage() {
                       key={prompt}
                       type="button"
                       onClick={() => handlePrompt(prompt)}
-                      className="rounded-full border border-[rgba(var(--primary),0.16)] bg-[rgba(var(--primary-soft),0.72)] px-3 py-1.5 text-[12px] text-[rgb(var(--primary-strong))] transition hover:bg-[rgba(var(--primary-soft),0.96)]"
+                      className="rounded-full border border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel),0.98)] px-3 py-1.5 text-[12px] text-[rgb(var(--foreground))] transition hover:border-[rgba(var(--primary),0.2)] hover:bg-[rgba(var(--panel),1)]"
                     >
                       {prompt}
                     </button>
@@ -373,7 +373,7 @@ export default function AIInsightsPage() {
                 <div
                   className={`rounded-[24px] border p-2.5 transition-all duration-200 ${
                     composerExpanded || message
-                      ? "border-[rgba(var(--primary),0.24)] bg-[linear-gradient(180deg,rgba(var(--panel),0.99),rgba(var(--primary-soft),0.24))] shadow-[0_14px_30px_rgba(var(--primary),0.1)]"
+                      ? "border-[rgba(var(--primary),0.24)] bg-[rgba(var(--panel),1)] shadow-[0_12px_24px_rgba(var(--shadow-color),0.08)]"
                       : "border-[rgba(var(--line),0.9)] bg-[rgba(var(--panel),0.98)] shadow-md"
                   }`}
                 >
@@ -402,14 +402,14 @@ export default function AIInsightsPage() {
                       <button
                         type="button"
                         onClick={() => handlePrompt(EXAMPLE_PROMPTS[0])}
-                        className="rounded-full border border-[rgba(var(--accent),0.18)] bg-[rgba(var(--accent-soft),0.56)] px-3 py-1.5 text-[11px] font-medium text-[rgb(var(--muted-strong))] transition hover:bg-[rgba(var(--accent-soft),0.86)]"
+                        className="rounded-full border border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel),0.98)] px-3 py-1.5 text-[11px] font-medium text-[rgb(var(--muted-strong))] transition hover:border-[rgba(var(--primary),0.2)] hover:bg-[rgba(var(--panel),1)]"
                       >
                         Use example
                       </button>
                       <button
                         type="submit"
                         disabled={sending || !message.trim()}
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--accent),0.94))] text-white shadow-[0_10px_22px_rgba(var(--primary),0.18)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-45"
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgb(var(--primary))] text-white shadow-[0_8px_16px_rgba(var(--primary),0.14)] transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-45"
                         aria-label={sending ? "Sending message" : "Send message"}
                       >
                         <ArrowUp className="h-4 w-4" />
