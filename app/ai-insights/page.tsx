@@ -166,7 +166,7 @@ export default function AIInsightsPage() {
 
   return (
     <AppShell>
-      <div className="space-y-6">
+      <div className="space-y-4 lg:space-y-5">
         <PageHeader
           title="AI Insights"
           description={
@@ -175,9 +175,9 @@ export default function AIInsightsPage() {
               : "A tenant-scoped finance copilot limited to the data visible for your current role."
           }
         />
-        <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="panel flex h-[calc(100vh-12.5rem)] flex-col overflow-hidden bg-[linear-gradient(180deg,rgba(var(--panel),0.98),rgba(var(--primary-soft),0.44))]">
-            <div className="border-b border-[rgba(var(--line),0.84)] px-4 py-4">
+        <div className="grid gap-4 lg:grid-cols-[248px_minmax(0,1fr)] xl:grid-cols-[272px_minmax(0,1fr)]">
+          <aside className="panel flex overflow-hidden bg-[linear-gradient(180deg,rgba(var(--panel),0.98),rgba(var(--primary-soft),0.44))] lg:h-[calc(100vh-11rem)] lg:flex-col">
+            <div className="border-b border-[rgba(var(--line),0.84)] px-4 py-4 lg:px-4">
               <button
                 type="button"
                 onClick={handleNewChat}
@@ -187,39 +187,41 @@ export default function AIInsightsPage() {
                 New chat
               </button>
             </div>
-            <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
+            <div className="flex-1 overflow-x-auto px-3 py-3 lg:overflow-y-auto lg:overflow-x-hidden">
               {sessions.length === 0 ? (
                 <div className="rounded-[24px] border border-dashed border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel-muted),0.45)] px-4 py-5 text-sm text-[rgb(var(--muted-strong))]">
                   Start your first conversation to create a saved session.
                 </div>
               ) : (
-                sessions.map((session) => {
-                  const active = session.id === activeSession?.id;
-                  return (
-                    <button
-                      key={session.id}
-                      type="button"
-                      onClick={() => {
-                        setSelectedSessionId(session.id);
-                        setPendingMessages([]);
-                        setError(null);
-                      }}
-                      className={`w-full rounded-[24px] border px-4 py-3 text-left transition ${
-                        active
-                          ? "border-[rgba(var(--primary),0.95)] bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--primary-strong),0.94))] text-white shadow-[0_16px_30px_rgba(var(--primary),0.24)]"
-                          : "border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel),0.72)] text-[rgb(var(--foreground))] hover:border-[rgba(var(--primary),0.26)] hover:bg-[rgba(var(--panel),0.96)]"
-                      }`}
-                    >
-                      <div className="truncate text-sm font-semibold">{session.title}</div>
-                      <div className={`mt-2 line-clamp-2 text-xs leading-5 ${active ? "text-white/70" : "text-[rgb(var(--muted-strong))]"}`}>
-                        {sessionPreview(session)}
-                      </div>
-                    </button>
-                  );
-                })
+                <div className="flex gap-2 lg:grid lg:gap-2">
+                  {sessions.map((session) => {
+                    const active = session.id === activeSession?.id;
+                    return (
+                      <button
+                        key={session.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedSessionId(session.id);
+                          setPendingMessages([]);
+                          setError(null);
+                        }}
+                        className={`min-w-[220px] rounded-[24px] border px-4 py-3 text-left transition lg:min-w-0 ${
+                          active
+                            ? "border-[rgba(var(--primary),0.95)] bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--primary-strong),0.94))] text-white shadow-[0_16px_30px_rgba(var(--primary),0.24)]"
+                            : "border-[rgba(var(--line),0.84)] bg-[rgba(var(--panel),0.72)] text-[rgb(var(--foreground))] hover:border-[rgba(var(--primary),0.26)] hover:bg-[rgba(var(--panel),0.96)]"
+                        }`}
+                      >
+                        <div className="truncate text-sm font-semibold">{session.title}</div>
+                        <div className={`mt-2 line-clamp-2 text-xs leading-5 ${active ? "text-white/70" : "text-[rgb(var(--muted-strong))]"}`}>
+                          {sessionPreview(session)}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               )}
             </div>
-            <div className="border-t border-[rgba(var(--line),0.84)] px-4 py-4">
+            <div className="hidden border-t border-[rgba(var(--line),0.84)] px-4 py-4 lg:block">
               <div className="rounded-[24px] border border-[rgba(var(--primary),0.14)] bg-[linear-gradient(135deg,rgba(var(--primary-soft),0.92),rgba(var(--accent-soft),0.72))] px-4 py-4 text-sm text-[rgb(var(--muted-strong))]">
                 <div className="flex items-center gap-2 font-medium text-[rgb(var(--primary-strong))]">
                   <Sparkles className="h-4 w-4" />
@@ -230,7 +232,7 @@ export default function AIInsightsPage() {
             </div>
           </aside>
 
-          <section className="panel flex h-[calc(100vh-12.5rem)] flex-col overflow-hidden bg-[linear-gradient(180deg,rgba(var(--panel),0.98),rgba(var(--panel-strong),0.98))]">
+          <section className="panel flex min-h-[72vh] flex-col overflow-hidden bg-[linear-gradient(180deg,rgba(var(--panel),0.98),rgba(var(--panel-strong),0.98))] lg:h-[calc(100vh-11rem)] lg:min-h-0">
             <div className="border-b border-[rgba(var(--line),0.84)] px-5 py-4 sm:px-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -249,10 +251,10 @@ export default function AIInsightsPage() {
 
             <div
               ref={transcriptRef}
-              className="flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(var(--primary),0.12),transparent_34%),linear-gradient(180deg,rgba(var(--panel-muted),0.36),rgba(var(--panel),0.08))] px-4 py-6 sm:px-6"
+              className="flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(var(--primary),0.12),transparent_34%),linear-gradient(180deg,rgba(var(--panel-muted),0.36),rgba(var(--panel),0.08))] px-3 py-5 sm:px-5 lg:px-6"
             >
               {renderedMessages.length === 0 ? (
-                <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 py-12 text-center">
+                <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-6 py-12 text-center">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--accent),0.95))] text-white shadow-[0_18px_40px_rgba(var(--primary),0.22)]">
                     <Sparkles className="h-6 w-6" />
                   </div>
@@ -277,17 +279,17 @@ export default function AIInsightsPage() {
                   </div>
                 </div>
               ) : (
-                <div className="mx-auto max-w-4xl space-y-6">
+                <div className="mx-auto w-full max-w-[1100px] space-y-5">
                   {renderedMessages.map((item) => {
                     const assistant = item.role === "assistant";
                     return (
-                      <div key={item.id} className={`flex gap-4 ${assistant ? "items-start" : "justify-end"}`}>
+                      <div key={item.id} className={`flex w-full gap-3 lg:gap-4 ${assistant ? "items-start" : "justify-end"}`}>
                         {assistant ? (
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(var(--primary),1),rgba(var(--accent),0.92))] text-white shadow-[0_10px_24px_rgba(var(--primary),0.22)]">
                             <Bot className="h-5 w-5" />
                           </div>
                         ) : null}
-                        <div className={`${assistant ? "max-w-3xl" : "max-w-2xl"}`}>
+                        <div className={`${assistant ? "w-full max-w-[920px]" : "w-full max-w-[820px]"}`}>
                           <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-[rgb(var(--muted-strong))]">
                             {assistant ? "Assistant" : "You"}
                             {"pending" in item && item.pending ? <span className="normal-case tracking-normal">typing...</span> : null}
@@ -360,7 +362,7 @@ export default function AIInsightsPage() {
                 </div>
               ) : null}
 
-              <form onSubmit={ask} className="mx-auto max-w-4xl">
+              <form onSubmit={ask} className="mx-auto w-full max-w-[1100px]">
                 <div
                   className={`rounded-[30px] border p-3 transition-all duration-200 ${
                     composerExpanded || message
